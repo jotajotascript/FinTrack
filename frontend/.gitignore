@@ -1,0 +1,14 @@
+node_modules/
+dist/
+
+### VSCode ###
+.vscode/
+
+### Angular ###
+.angular/
+
+### Logs ###
+*.log
+
+### Environment ###
+.env
