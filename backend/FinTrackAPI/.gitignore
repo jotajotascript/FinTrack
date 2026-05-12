@@ -1,8 +1,13 @@
+### HELP ###
 HELP.md
+
+### Maven / Build ###
 target/
-.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+# Maven Wrapper (COMMITAR o properties, ignorar só o jar)
+.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
 .apt_generated
@@ -32,9 +37,9 @@ build/
 ### VS Code ###
 .vscode/
 
-# Environment variables
+### Environment variables (SEGREDOS) ###
 .env
 
-# OS files
+### OS files ###
 .DS_Store
 Thumbs.db
