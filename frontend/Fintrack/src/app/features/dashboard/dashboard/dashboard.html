@@ -1,0 +1,179 @@
+<div class="flex h-screen w-full bg-background">
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar w-64 flex-shrink-0 border-r border-outline-variant bg-surface flex flex-col justify-between p-lg">
+    <div class="flex flex-col gap-xl">
+
+      <!-- Brand -->
+      <div class="flex items-center gap-md">
+        <div class="size-8 text-primary">
+            <div>
+                <img src="Logo.png" alt="FinTrack Logo" style="width: 3rem; height: 3rem; object-fit: contain;">
+            </div>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight text-white">FinTrack</h1>
+      </div>
+
+      <!-- Nav Links -->
+      <nav class="flex flex-col gap-sm">
+        <a class="flex items-center gap-md px-md py-sm rounded-lg bg-surface-container-high text-primary font-medium" href="#">
+          <span class="material-symbols-outlined filled">dashboard</span>
+          <span>Home</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm rounded-lg hover:bg-surface-container text-on-surface-variant font-medium transition-colors" href="#">
+          <span class="material-symbols-outlined">receipt_long</span>
+          <span>Despesas</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm rounded-lg hover:bg-surface-container text-on-surface-variant font-medium transition-colors" href="#">
+          <span class="material-symbols-outlined">credit_card</span>
+          <span>Receitas</span>
+        </a>
+
+      </nav>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="flex items-center gap-md p-md bg-surface-container-low rounded-xl border border-outline-variant">
+      <div class="size-10 rounded-full bg-surface-bright overflow-hidden flex items-center justify-center">
+        <span class="material-symbols-outlined text-on-surface-variant">person</span>
+      </div>
+      <div class="flex flex-col min-w-0">
+        <p class="text-sm font-semibold text-white truncate">{{ nomeUsuario }}</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="flex-1 flex flex-col overflow-hidden relative">
+
+    <!-- Top Navigation -->
+    <header class="h-16 border-b border-outline-variant bg-surface flex items-center justify-between px-xl z-10">
+      <div class="flex items-center gap-lg">
+
+      </div>
+      <div class="flex items-center gap-md">
+
+        <div class="h-8 w-px bg-outline-variant mx-sm"></div>
+        <p class="text-sm font-medium text-on-surface-variant">{{ dataAtual }}</p>
+      </div>
+    </header>
+
+    <!-- Scrollable Content -->
+    <div class="flex-1 overflow-y-auto p-xl space-y-xl">
+
+      <!-- Welcome Header -->
+      <section class="flex flex-col gap-xs">
+        <h2 class="text-3xl font-bold text-white tracking-tight">Olá, {{ primeiroNome }}!</h2>
+        <p class="text-on-surface-variant text-lg">Veja seu resumo financeiro atualizado.</p>
+      </section>
+
+      <!-- Summary Cards -->
+      <section class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+
+        <div class="card bg-surface-container p-lg rounded-xl border border-outline-variant flex flex-col gap-md">
+          <div class="flex items-center justify-between">
+            <span class="text-on-surface-variant font-medium">Saldo Final</span>
+            <div class="icon-badge bg-primary-badge rounded-lg flex items-center justify-center text-primary">
+              <span class="material-symbols-outlined" style="font-size:20px;">account_balance_wallet</span>
+            </div>
+          </div>
+          <p class="text-2xl font-bold text-white">{{ saldoFinal | currency:'BRL':'symbol':'1.2-2' }}</p>
+          <div class="flex items-center gap-xs text-tertiary text-sm">
+
+          </div>
+        </div>
+
+        <div class="card bg-surface-container p-lg rounded-xl border border-outline-variant flex flex-col gap-md">
+          <div class="flex items-center justify-between">
+            <span class="text-on-surface-variant font-medium">Receitas (Mês)</span>
+            <div class="icon-badge bg-tertiary-badge rounded-lg flex items-center justify-center text-tertiary">
+              <span class="material-symbols-outlined" style="font-size:20px;">arrow_downward</span>
+            </div>
+          </div>
+          <p class="text-2xl font-bold text-white">{{ receitasMes | currency:'BRL':'symbol':'1.2-2' }}</p>
+          <div class="flex items-center gap-xs text-tertiary text-sm">
+
+          </div>
+        </div>
+
+        <div class="card bg-surface-container p-lg rounded-xl border border-outline-variant flex flex-col gap-md">
+          <div class="flex items-center justify-between">
+            <span class="text-on-surface-variant font-medium">Despesas (Mês)</span>
+            <div class="icon-badge bg-error-badge rounded-lg flex items-center justify-center text-error">
+              <span class="material-symbols-outlined" style="font-size:20px;">arrow_upward</span>
+            </div>
+          </div>
+          <p class="text-2xl font-bold text-white">{{ despesasMes | currency:'BRL':'symbol':'1.2-2' }}</p>
+          <div class="flex items-center gap-xs text-error text-sm">
+
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Chart Section -->
+      <section>
+        <div class="bg-surface-container p-lg rounded-xl border border-outline-variant flex flex-col gap-lg">
+
+          <div class="flex items-center justify-between">
+            <div class="flex flex-col gap-1">
+              <h3 class="font-semibold text-lg text-white">Relação Despesa / Receita</h3>
+              <div class="flex items-center gap-md">
+                <div class="flex items-center gap-xs">
+                  <div class="size-2 rounded-full bg-primary"></div>
+                  <span class="text-on-surface-variant font-bold tracking-wider" style="font-size:10px;">RECEITAS</span>
+                </div>
+                <div class="flex items-center gap-xs">
+                  <div class="size-2 rounded-full bg-error"></div>
+                  <span class="text-on-surface-variant font-bold tracking-wider" style="font-size:10px;">DESPESAS</span>
+                </div>
+              </div>
+            </div>
+            <select class="bg-surface-container-low border border-outline-variant rounded-lg text-on-surface-variant outline-none"
+                    style="font-size:12px; padding: 4px 8px;">
+              <option>Últimos 7 meses</option>
+              <option>Último ano</option>
+            </select>
+          </div>
+
+          <!-- Bar Chart -->
+          <div class="chart-area h-64 w-full flex items-end gap-3 pb-md">
+            @for (mes of meses; track mes.label; let i = $index) {
+              <div class="flex-1 flex items-end gap-1 h-full group relative">
+                @if (i === meses.length - 1) {
+                  <div class="mes-atual-label absolute bg-surface-bright px-2 py-1 rounded text-on-surface"
+                       style="font-size:10px; top:-28px; left:50%; transform:translateX(-50%); white-space:nowrap;">
+                    Mês Atual
+                  </div>
+                }
+                <div class="w-full rounded-t-sm transition-all bar-receita"
+                     [class.current]="i === meses.length - 1"
+                     [style.height.%]="mes.receita">
+                </div>
+                <div class="w-full rounded-t-sm transition-all bar-despesa"
+                     [class.current]="i === meses.length - 1"
+                     [style.height.%]="mes.despesa">
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Month Labels -->
+          <div class="flex justify-between text-on-surface-variant px-1" style="font-size:12px;">
+            @for (mes of meses; track mes.label) {
+              <span>{{ mes.label }}</span>
+            }
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab fixed bottom-xl right-xl rounded-full bg-tertiary text-on-tertiary font-bold flex items-center gap-sm shadow-xl z-20" style="width: auto; height: 70px; padding: 20px; justify-content: center;">
+        <span class="material-symbols-outlined">add</span>
+        <span>Nova Transação</span>
+    </button>
+
+  </main>
+</div>
