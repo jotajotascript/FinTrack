@@ -1,0 +1,116 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #091421;
+}
+
+.register-card {
+  background-color: #16202e;
+  border: 1px solid #424754;
+  border-radius: 1rem;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.logo-area {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.logo-area h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.logo-area p {
+  color: #c2c6d6;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.input-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #c2c6d6;
+}
+
+.input-group input {
+  background-color: #121c2a;
+  border: 1px solid #424754;
+  border-radius: 0.5rem;
+  padding: 0.65rem 1rem;
+  color: #d9e3f6;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+  border-color: #adc6ff;
+}
+
+.input-group input::placeholder {
+  color: #8c909f;
+}
+
+button {
+  background-color: #4edea3;
+  color: #003824;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 0.5rem;
+}
+
+button:hover { opacity: 0.9; }
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.erro {
+  background-color: rgba(255, 180, 171, 0.1);
+  border: 1px solid #ffb4ab;
+  color: #ffb4ab;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+}
+
+.sucesso {
+  background-color: rgba(78, 222, 163, 0.1);
+  border: 1px solid #4edea3;
+  color: #4edea3;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+}
+
+.login-link {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #c2c6d6;
+}
+
+.login-link a {
+  color: #adc6ff;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0.25rem;
+}
+
+.login-link a:hover { text-decoration: underline; }

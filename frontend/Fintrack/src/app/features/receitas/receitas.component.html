@@ -1,0 +1,76 @@
+<div class="container">
+
+  <h1>Receitas</h1>
+
+  <div class="formulario">
+
+    <input
+      type="text"
+      placeholder="Descrição"
+      [(ngModel)]="descricao"
+    >
+
+    <input
+      type="number"
+      placeholder="Valor"
+      [(ngModel)]="valor"
+    >
+
+    <input
+      type="text"
+      placeholder="Categoria"
+      [(ngModel)]="categoria"
+    >
+
+    <input
+      type="date"
+      [(ngModel)]="data"
+    >
+
+    <button (click)="adicionarReceita()">
+      Adicionar
+    </button>
+
+  </div>
+
+  <table>
+
+    <thead>
+      <tr>
+        <th>Descrição</th>
+        <th>Valor</th>
+        <th>Categoria</th>
+        <th>Data</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let receita of receitas">
+
+        <td>{{ receita.descricao }}</td>
+
+        <td>{{ receita.valor }}</td>
+
+        <td>{{ receita.categoria }}</td>
+
+        <td>{{ receita.data }}</td>
+
+        <td>
+
+          <button
+            (click)="excluirReceita(receita.id)"
+          >
+            Excluir
+          </button>
+
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
