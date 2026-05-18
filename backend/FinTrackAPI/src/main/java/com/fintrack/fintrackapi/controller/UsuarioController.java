@@ -5,6 +5,7 @@ import com.fintrack.fintrackapi.entity.Usuario;
 import com.fintrack.fintrackapi.service.UsuarioService;
 import com.fintrack.fintrackapi.security.AuthenticatedUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,5 +30,11 @@ public class UsuarioController {
     @GetMapping("/me")
     public Usuario me() {
         return authenticatedUserService.getUsuarioLogado();
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletar() {
+        usuarioService.deletar();
     }
 }

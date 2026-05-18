@@ -8,6 +8,7 @@ import com.fintrack.fintrackapi.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.fintrack.fintrackapi.security.AuthenticatedUserService;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuthenticatedUserService authenticatedUserService;
 
     public Usuario cadastrar(UsuarioRequestDTO dto) {
 
@@ -42,5 +44,10 @@ public class UsuarioService {
         }
 
         return jwtService.generateToken(usuario.getEmail());
+    }
+
+    public void deletar() {
+        Usuario usuario = authenticatedUserService.getUsuarioLogado();
+        usuarioRepository.delete(usuario);
     }
 }
