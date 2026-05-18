@@ -1,0 +1,226 @@
+<div class="page">
+
+  <div class="header">
+    <h1>CRUD Despesas</h1>
+
+    <button class="btn-primary" (click)="abrirModal()">
+      Nova Despesa
+    </button>
+  </div>
+
+  <!-- TABELA -->
+
+  <div class="table-container">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Valor</th>
+          <th>Categoria</th>
+          <th>Data</th>
+          <th>Recorrência</th>
+          <th>Tipo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let item of despesas">
+
+          <td>
+            {{ item.valor | currency:'BRL' }}
+          </td>
+
+          <td>
+            {{ item.categoria }}
+          </td>
+
+          <td>
+            {{ item.data }}
+          </td>
+
+          <td>
+            {{ item.recorrencia }}
+          </td>
+
+          <td>
+            {{ item.tipo }}
+          </td>
+
+          <td class="acoes">
+
+            <button
+              class="btn-edit"
+              (click)="editarDespesa(item)"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btn-delete"
+              (click)="excluirDespesa(item.id)"
+            >
+              Excluir
+            </button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+  <!-- MODAL -->
+
+  <div
+    class="modal-overlay"
+    *ngIf="modalAberto"
+  >
+
+    <div class="modal">
+
+      <!-- HEADER -->
+
+      <div class="modal-header">
+
+        <h2>Nova Despesa</h2>
+
+        <button
+          class="close-btn"
+          (click)="fecharModal()"
+        >
+          ✕
+        </button>
+
+      </div>
+
+      <!-- TOGGLE -->
+
+      <div class="toggle">
+
+        <button
+          [class.active]="novaDespesa.tipo === 'fixa'"
+          (click)="novaDespesa.tipo = 'fixa'"
+        >
+          Despesas Fixas
+        </button>
+
+        <button
+          [class.active]="novaDespesa.tipo === 'variavel'"
+          (click)="novaDespesa.tipo = 'variavel'"
+        >
+          Despesas Variáveis
+        </button>
+
+      </div>
+
+      <!-- FORM -->
+
+      <div class="form">
+
+        <div class="valor-box">
+
+          <label>Valor (R$)</label>
+
+          <input
+            type="number"
+            [(ngModel)]="novaDespesa.valor"
+          />
+
+        </div>
+
+        <div class="grid">
+
+          <div class="field">
+
+            <label>Data de Vencimento</label>
+
+            <input
+              type="date"
+              [(ngModel)]="novaDespesa.data"
+            />
+
+          </div>
+
+          <div class="field">
+
+            <label>Categoria</label>
+
+            <select [(ngModel)]="novaDespesa.categoria">
+
+              <option value="">
+                Selecione uma categoria
+              </option>
+
+              <option value="Salário">
+                Salário
+              </option>
+
+              <option value="Freelance">
+                Freelance
+              </option>
+
+              <option value="Investimentos">
+                Investimentos
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="field">
+
+          <label>Recorrência</label>
+
+          <select [(ngModel)]="novaDespesa.recorrencia">
+
+            <option>
+              Semanal
+            </option>
+
+            <option>
+              Mensal
+            </option>
+
+            <option>
+              Anual
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+
+      <div class="modal-footer">
+
+        <button
+          class="btn-cancel"
+          (click)="fecharModal()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          class="btn-confirm"
+          (click)="salvarDespesa()"
+        >
+          Confirmar Receita
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

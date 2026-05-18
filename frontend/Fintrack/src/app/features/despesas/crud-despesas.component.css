@@ -1,0 +1,204 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #091421;
+  color: #d9e3f6;
+  font-family: Inter, sans-serif;
+  padding: 40px;
+}
+
+/* HEADER */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.btn-primary {
+  background: #3B82F6;
+  color: white;
+  border: none;
+  padding: 14px 22px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* TABLE */
+
+.table-container {
+  background: #16202e;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 18px;
+  border-bottom: 1px solid #2b3544;
+  text-align: left;
+}
+
+th {
+  background: #121c2a;
+}
+
+.acoes {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-edit {
+  background: #2563eb;
+  border: none;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn-delete {
+  background: #dc2626;
+  border: none;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* MODAL */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,15,28,0.8);
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  width: 100%;
+  max-width: 700px;
+  background: #16202e;
+  border: 1px solid #424754;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 24px;
+  border-bottom: 1px solid #424754;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.toggle {
+  display: flex;
+  margin: 24px;
+  background: #121c2a;
+  padding: 6px;
+  border-radius: 12px;
+}
+
+.toggle button {
+  flex: 1;
+  padding: 14px;
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.toggle button.active {
+  background: #404758;
+  color: white;
+  font-weight: bold;
+}
+
+.form {
+  padding: 24px;
+}
+
+.valor-box {
+  margin-bottom: 30px;
+}
+
+.valor-box input {
+  width: 100%;
+  background: #050f1c;
+  border: none;
+  border-radius: 14px;
+  padding: 20px;
+  font-size: 36px;
+  text-align: center;
+  color: #adc6ff;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.field input,
+.field select {
+  background: #212b39;
+  border: 1px solid #424754;
+  border-radius: 12px;
+  padding: 14px;
+  color: white;
+}
+
+.modal-footer {
+  background: #212b39;
+  padding: 24px;
+  display: flex;
+  gap: 20px;
+}
+
+.btn-cancel,
+.btn-confirm {
+  flex: 1;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-cancel {
+  background: #16202e;
+  color: white;
+}
+
+.btn-confirm {
+  background: #3B82F6;
+  color: white;
+}

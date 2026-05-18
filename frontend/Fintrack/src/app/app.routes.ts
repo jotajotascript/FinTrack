@@ -27,18 +27,23 @@ export const routes: Routes = [
       .then(m => m.ReceitasComponent)
 },
 
-  //{
-   // path: 'despesas',
-   // loadChildren: () =>
-     // import('./features/despesas/despesa.model').then(m => m.DespesasModule),
-    //canActivate: [authGuard]
-  //},
+ {
+
+  path: 'despesas',
+  loadComponent: () =>
+    import('./features/despesas/despesas.component').then(m => m.DespesasComponent),
+},
+{
+  path: 'crud-despesas',
+  loadComponent: () =>
+    import('./features/despesas/crud-despesas.component').then(m => m.CrudDespesasComponent),
+},
 
   {
     path: 'categorias',
     loadChildren: () =>
       import('./features/categorias/categorias-module').then(m => m.CategoriasModule),
-    canActivate: [authGuard]
+  
   },
 
   {
