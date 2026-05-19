@@ -1,15 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { AuthService } from '../../../core/services/auth';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth'; // Usando o serviço
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
@@ -22,7 +20,7 @@ export class RegisterComponent {
   sucesso: string = '';
   carregando: boolean = false;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   async cadastrar() {
     if (!this.nome || !this.email || !this.senha || !this.confirmarSenha) {
@@ -40,20 +38,13 @@ export class RegisterComponent {
     this.sucesso = '';
 
     try {
-      await firstValueFrom(
-        this.http.post('http://localhost:8080/usuario/register', {
-          nome: this.nome,
-          email: this.email,
-          senha: this.senha
-        })
-      );
+      await this.authService.register(this.nome, this.email, this.senha);
 
       this.sucesso = 'Conta criada com sucesso! Redirecionando...';
       setTimeout(() => this.router.navigate(['/auth/login']), 2000);
 
     } catch (error: any) {
-      this.erro = error?.error?.message || 'Erro ao cadastrar. Tente novamente.';
-      console.error('Erro no cadastro:', error);
+      this.erro = error.message || 'Erro ao cadastrar. Tente novamente.';
     } finally {
       this.carregando = false;
     }
