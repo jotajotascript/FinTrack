@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
-
+import { RouterModule } from '@angular/router';
 interface MesData {
   label: string;
   receita: number;
@@ -10,7 +10,7 @@ interface MesData {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe],
+  imports: [CommonModule, CurrencyPipe, RouterModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
