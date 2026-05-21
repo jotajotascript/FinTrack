@@ -1,0 +1,234 @@
+<div class="page">
+
+  <div class="header">
+    <h1>CRUD Receitas</h1>
+
+    <button class="btn-primary" (click)="abrirModal()">
+      Nova Receita
+    </button>
+  </div>
+
+  <!-- TABELA -->
+
+  <div class="table-container">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Valor</th>
+          <th>Categoria</th>
+          <th>Data</th>
+          <th>Recorrência</th>
+          <th>Tipo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let item of receitas">
+
+          <td>
+            {{ item.valor | currency:'BRL' }}
+          </td>
+
+          <td>
+            {{ item.categoria }}
+          </td>
+
+          <td>
+            {{ item.data }}
+          </td>
+
+          <td>
+            {{ item.recorrencia }}
+          </td>
+
+          <td>
+            {{ item.tipo }}
+          </td>
+
+          <td class="acoes">
+
+            <button
+              class="btn-edit"
+              (click)="editarReceita(item)"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btn-delete"
+              (click)="excluirReceita(item.id)"
+            >
+              Excluir
+            </button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+  <!-- MODAL -->
+
+  <div
+    class="modal-overlay"
+    *ngIf="modalAberto"
+  >
+
+    <div class="modal">
+
+      <!-- HEADER -->
+
+      <div class="modal-header">
+
+        <h2>Nova Receita</h2>
+
+        <button
+          class="close-btn"
+          (click)="fecharModal()"
+        >
+          ✕
+        </button>
+
+      </div>
+
+      <!-- TOGGLE -->
+
+      <div class="toggle">
+
+        <button
+          [class.active]="novaReceita.tipo === 'fixa'"
+          (click)="novaReceita.tipo = 'fixa'"
+        >
+          Receitas Fixas
+        </button>
+
+        <button
+          [class.active]="novaReceita.tipo === 'variavel'"
+          (click)="novaReceita.tipo = 'variavel'"
+        >
+          Receitas Variáveis
+        </button>
+
+      </div>
+
+      <!-- FORM -->
+
+      <div class="form">
+
+        <div class="valor-box">
+
+          <label>Valor (R$)</label>
+
+          <input
+            type="number"
+            [(ngModel)]="novaReceita.valor"
+          />
+
+        </div>
+
+        <div class="grid">
+
+          <div class="field">
+
+            <label>Data de Recebimento</label>
+
+            <input
+              type="date"
+              [(ngModel)]="novaReceita.data"
+            />
+
+          </div>
+
+          <div class="field">
+
+            <label>Categoria</label>
+
+            <select [(ngModel)]="novaReceita.categoria">
+
+              <option value="">
+                Selecione uma categoria
+              </option>
+
+              <option value="Trabalho">
+                Trabalho
+              </option>
+
+              <option value="Serviços">
+                Serviços
+              </option>
+
+              <option value="Investimentos">
+                Investimentos
+              </option>
+
+              <option value="Aluguel">
+                Aluguel
+              </option>
+
+              <option value="Outros">
+                Outros
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="field" *ngIf="novaReceita.tipo === 'fixa'">
+
+          <label>Recorrência</label>
+
+          <select [(ngModel)]="novaReceita.recorrencia">
+
+            <option>
+              Semanal
+            </option>
+
+            <option>
+              Mensal
+            </option>
+
+            <option>
+              Anual
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+
+      <div class="modal-footer">
+
+        <button
+          class="btn-cancel"
+          (click)="fecharModal()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          class="btn-confirm"
+          (click)="salvarReceita()"
+        >
+          Confirmar Receita
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
