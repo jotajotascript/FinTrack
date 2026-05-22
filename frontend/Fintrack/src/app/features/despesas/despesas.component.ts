@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DespesaService, Despesa } from './despesa.service';
 
@@ -31,7 +32,7 @@ type DespesaForm = {
 @Component({
   selector: 'app-despesas',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './despesas.component.html',
   styleUrls: ['./despesas.component.css'],
 })

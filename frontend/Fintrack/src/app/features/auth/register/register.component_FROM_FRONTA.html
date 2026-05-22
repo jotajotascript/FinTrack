@@ -1,0 +1,64 @@
+<div class="register-container">
+
+  <div class="register-card">
+
+    <div class="logo-area">
+      <h1>FinTrack</h1>
+      <p>Crie sua conta gratuita</p>
+    </div>
+
+    <div class="input-group">
+      <label>Nome</label>
+      <input
+        type="text"
+        placeholder="Digite seu nome"
+        [(ngModel)]="nome"
+        name="nome"
+      />
+    </div>
+
+    <div class="input-group">
+      <label>E-mail</label>
+      <input
+        type="email"
+        placeholder="Digite seu e-mail"
+        [(ngModel)]="email"
+        name="email"
+      />
+    </div>
+
+    <div class="input-group">
+      <label>Senha</label>
+      <input
+        type="password"
+        placeholder="Mínimo 6 caracteres"
+        [(ngModel)]="senha"
+        name="senha"
+      />
+    </div>
+
+    <div class="input-group">
+      <label>Confirmar Senha</label>
+      <input
+        type="password"
+        placeholder="Repita a senha"
+        [(ngModel)]="confirmarSenha"
+        name="confirmarSenha"
+      />
+    </div>
+
+    <div class="erro" *ngIf="erro">{{ erro }}</div>
+    <div class="sucesso" *ngIf="sucesso">{{ sucesso }}</div>
+
+    <button (click)="cadastrar()" [disabled]="carregando">
+      {{ carregando ? 'Criando conta...' : 'Criar Conta' }}
+    </button>
+
+    <div class="login-link">
+      <span>Já possui conta?</span>
+      <a (click)="irParaLogin()">Entrar</a>
+    </div>
+
+  </div>
+
+</div>
