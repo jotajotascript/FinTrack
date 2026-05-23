@@ -31,6 +31,7 @@ export class AuthService {
 
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('token', data.token);
+      localStorage.setItem('nomeUsuario', data.nome);
     }
   }
 
@@ -75,6 +76,18 @@ export class AuthService {
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');
+      localStorage.removeItem('nomeUsuario');
+    }
+  }
+  
+  getNomeUsuario(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.nome || payload.sub || null;
+    } catch {
+      return null;
     }
   }
 }
