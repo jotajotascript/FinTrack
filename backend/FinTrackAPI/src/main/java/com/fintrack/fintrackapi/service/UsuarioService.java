@@ -1,6 +1,7 @@
 package com.fintrack.fintrackapi.service;
 
 import com.fintrack.fintrackapi.dto.LoginRequestDTO;
+import com.fintrack.fintrackapi.dto.LoginResponseDTO; 
 import com.fintrack.fintrackapi.dto.UsuarioRequestDTO;
 import com.fintrack.fintrackapi.entity.Usuario;
 import com.fintrack.fintrackapi.repository.UsuarioRepository;
@@ -34,8 +35,7 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public String login(LoginRequestDTO dto) {
-
+    public LoginResponseDTO login(LoginRequestDTO dto) {
         Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
@@ -43,7 +43,8 @@ public class UsuarioService {
             throw new RuntimeException("Senha inválida");
         }
 
-        return jwtService.generateToken(usuario.getEmail());
+        String token = jwtService.generateToken(usuario.getEmail());
+        return new LoginResponseDTO(token, usuario.getNome());
     }
 
     public void deletar() {

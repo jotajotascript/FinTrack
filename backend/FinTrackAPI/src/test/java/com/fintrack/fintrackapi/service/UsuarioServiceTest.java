@@ -1,5 +1,4 @@
 package com.fintrack.fintrackapi.service;
-
 import com.fintrack.fintrackapi.dto.LoginRequestDTO;
 import com.fintrack.fintrackapi.dto.UsuarioRequestDTO;
 import com.fintrack.fintrackapi.entity.Usuario;
@@ -12,11 +11,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import java.util.Optional;
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -101,9 +99,10 @@ class UsuarioServiceTest {
         when(passwordEncoder.matches(dto.getSenha(), usuario.getSenha())).thenReturn(true);
         when(jwtService.generateToken(usuario.getEmail())).thenReturn("token_jwt");
 
-        String token = usuarioService.login(dto);
+        var resultado = usuarioService.login(dto);
 
-        assertEquals("token_jwt", token);
+        assertEquals("token_jwt", resultado.getToken());
+        assertEquals("João", resultado.getNome());     
     }
 
     @Test

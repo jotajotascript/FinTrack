@@ -23,8 +23,7 @@ public class UsuarioController {
 
     @PostMapping("/login")
     public LoginResponseDTO login(@RequestBody LoginRequestDTO dto) {
-        String token = usuarioService.login(dto);
-        return new LoginResponseDTO(token);
+        return usuarioService.login(dto);
     }
 
     @GetMapping("/me")
