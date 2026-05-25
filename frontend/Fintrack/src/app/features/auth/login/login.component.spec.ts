@@ -1,44 +1,35 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+
+import { LoginComponent } from './login.component';
 import { AuthService } from '../../../core/services/auth';
 
-@Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
-})
-export class LoginComponent {
-  email: string = '';
-  senha: string = '';
-  erro: string = '';
-  carregando: boolean = false;
+describe('LoginComponent', () => {
+  let component: LoginComponent;
+  let fixture: ComponentFixture<LoginComponent>;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  const authServiceMock = {
+    login: async () => {}
+  };
 
-  async entrar() {
-    if (!this.email || !this.senha) {
-      this.erro = 'Preencha o e-mail e a senha.';
-      return;
-    }
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [LoginComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthService,
+          useValue: authServiceMock
+        }
+      ]
+    }).compileComponents();
 
-    this.carregando = true;
-    this.erro = '';
+    fixture = TestBed.createComponent(LoginComponent);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
 
-    try {
-      await this.authService.login(this.email, this.senha);
-      this.router.navigate(['/dashboard']);
-    } catch (error: any) {
-      this.erro = 'E-mail ou senha incorretos.';
-      console.error('Erro no login:', error);
-    } finally {
-      this.carregando = false;
-    }
-  }
-}
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
