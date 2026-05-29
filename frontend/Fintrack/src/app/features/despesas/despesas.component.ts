@@ -54,14 +54,6 @@ export class DespesasComponent implements OnInit {
     return this.despesaService.despesas;
   }
 
-  get despesasFiltradas(): Despesa[] {
-    if (!this.searchQuery.trim()) return this.despesas;
-    const q = this.searchQuery.toLowerCase();
-    return this.despesas.filter(
-      (d) => d.nome.toLowerCase().includes(q) || d.descricao.toLowerCase().includes(q),
-    );
-  }
-
   get despesasPaginadas(): Despesa[] {
     const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
     return this.despesasFiltradas.slice(inicio, inicio + this.itensPorPagina);
@@ -85,6 +77,49 @@ export class DespesasComponent implements OnInit {
 
   irPagina(p: number): void {
     if (p >= 1 && p <= this.totalPaginas) this.paginaAtual = p;
+  }
+
+  // ─── Filtro de Categoria (dropdown btn-filter) ───────────────────────────────
+  dropdownCategoriasAberto = false;
+  categoriaSelecionada = '';
+
+  toggleDropdownCategorias(): void {
+    this.dropdownCategoriasAberto = !this.dropdownCategoriasAberto;
+  }
+
+  fecharDropdownCategorias(): void {
+    this.dropdownCategoriasAberto = false;
+  }
+
+  filtrarPorCategoria(nome: string): void {
+    this.categoriaSelecionada = this.categoriaSelecionada === nome ? '' : nome;
+    this.dropdownCategoriasAberto = false;
+    this.paginaAtual = 1;
+  }
+
+  limparFiltroCategoria(): void {
+    this.categoriaSelecionada = '';
+    this.dropdownCategoriasAberto = false;
+    this.paginaAtual = 1;
+  }
+
+  get despesasFiltradas(): Despesa[] {
+    let lista = this.despesas;
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      lista = lista.filter(
+        (d) => d.nome.toLowerCase().includes(q) || d.descricao.toLowerCase().includes(q),
+      );
+    }
+    if (this.categoriaSelecionada) {
+      lista = lista.filter(d => d.categoria === this.categoriaSelecionada);
+    }
+    return lista;
+  }
+
+  get categoriasUsadasNasDespesas(): string[] {
+    const set = new Set(this.despesas.map(d => d.categoria).filter(Boolean));
+    return Array.from(set);
   }
 
   // ─── Modal Gerenciar Categorias ──────────────────────────────────────────────
@@ -237,6 +272,10 @@ export class DespesasComponent implements OnInit {
     }
 
     this.fecharModalCrud();
+  }
+
+  contarDespesasPorCategoria(nome: string): number {
+    return this.despesas.filter(d => d.categoria === nome).length;
   }
 
   // ─── Helpers ─────────────────────────────────────────────────────────────────

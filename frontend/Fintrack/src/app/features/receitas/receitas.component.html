@@ -120,11 +120,50 @@
           <span class="material-symbols-outlined">search</span>
           <input class="filter-input" placeholder="Pesquisar por descrição ou fonte..." type="text" [(ngModel)]="searchQuery" />
         </div>
-        <button class="btn-filter">
-          <span class="material-symbols-outlined">filter_list</span>
-          Categorias
-          <span class="material-symbols-outlined">keyboard_arrow_down</span>
-        </button>
+        <!-- Dropdown Filtro Categorias -->
+        <div class="categoria-filter-wrapper">
+          <button
+            class="btn-filter"
+            [class.btn-filter--active]="categoriaSelecionada"
+            (click)="toggleDropdownCategorias()"
+          >
+            <span class="material-symbols-outlined">filter_list</span>
+            {{ categoriaSelecionada || 'Categorias' }}
+            <span class="material-symbols-outlined">{{ dropdownCategoriasAberto ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</span>
+          </button>
+
+          <div *ngIf="dropdownCategoriasAberto" class="categoria-dropdown">
+            <div class="categoria-dropdown-header">
+              <span class="categoria-dropdown-title">Filtrar por Categoria</span>
+            </div>
+            <ul class="categoria-dropdown-list">
+              <li
+                class="categoria-dropdown-item"
+                [class.categoria-dropdown-item--active]="!categoriaSelecionada"
+                (click)="limparFiltroCategoria()"
+              >
+                <span class="material-symbols-outlined">apps</span>
+                Todas as categorias
+              </li>
+              <li
+                *ngFor="let cat of todasCategorias"
+                class="categoria-dropdown-item"
+                [class.categoria-dropdown-item--active]="categoriaSelecionada === cat.nome"
+                [class.categoria-dropdown-item--disabled]="!categoriasUsadasNasReceitas.includes(cat.nome)"
+                (click)="filtrarPorCategoria(cat.nome)"
+              >
+                <span class="material-symbols-outlined">{{ cat.icone }}</span>
+                {{ cat.nome }}
+                <span
+                  *ngIf="categoriasUsadasNasReceitas.includes(cat.nome)"
+                  class="categoria-dropdown-badge"
+                >
+                  {{ contarReceitasPorCategoria(cat.nome) }}
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       <!-- Table Section -->

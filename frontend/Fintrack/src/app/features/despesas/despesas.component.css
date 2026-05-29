@@ -903,3 +903,93 @@
 .alimentacao { background: rgba(78,222,163,0.2); color: #4edea3; }
 .moradia     { background: rgba(173,198,255,0.2); color: #adc6ff; }
 .transporte  { background: #404758; color: #aeb5c9; }
+/* ─── Dropdown Filtro Categorias ─────────────────────────────────────────── */
+.categoria-filter-wrapper {
+  position: relative;
+}
+
+.btn-filter--active {
+  background: rgba(173, 198, 255, 0.15);
+  border-color: #adc6ff;
+  color: #adc6ff;
+}
+
+.categoria-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 200;
+  min-width: 230px;
+  background: #1e2130;
+  border: 1px solid #2e3347;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+  overflow: hidden;
+  animation: dropdownFadeIn 0.15s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.categoria-dropdown-header {
+  padding: 12px 16px 8px;
+  border-bottom: 1px solid #2e3347;
+}
+
+.categoria-dropdown-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8c909f;
+}
+
+.categoria-dropdown-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.categoria-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  font-size: 14px;
+  color: #cdd3e0;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.categoria-dropdown-item:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.categoria-dropdown-item--active {
+  background: rgba(173,198,255,0.1);
+  color: #adc6ff;
+}
+
+.categoria-dropdown-item--disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.categoria-dropdown-item .material-symbols-outlined {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.categoria-dropdown-badge {
+  margin-left: auto;
+  background: rgba(173,198,255,0.15);
+  color: #adc6ff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+}

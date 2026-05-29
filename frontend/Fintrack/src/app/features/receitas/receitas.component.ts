@@ -47,6 +47,39 @@ export class ReceitasComponent implements OnInit {
   modoEdicao = false;
   formulario: ReceitaForm = this.formVazio();
 
+  // ─── Filtro de Categoria (dropdown btn-filter) ───────────────────────────────
+  dropdownCategoriasAberto = false;
+  categoriaSelecionada = '';
+
+  toggleDropdownCategorias(): void {
+    this.dropdownCategoriasAberto = !this.dropdownCategoriasAberto;
+  }
+
+  fecharDropdownCategorias(): void {
+    this.dropdownCategoriasAberto = false;
+  }
+
+  filtrarPorCategoria(nome: string): void {
+    this.categoriaSelecionada = this.categoriaSelecionada === nome ? '' : nome;
+    this.dropdownCategoriasAberto = false;
+    this.paginaAtual = 1;
+  }
+
+  limparFiltroCategoria(): void {
+    this.categoriaSelecionada = '';
+    this.dropdownCategoriasAberto = false;
+    this.paginaAtual = 1;
+  }
+
+  get categoriasUsadasNasReceitas(): string[] {
+    const set = new Set(this.listaReceitas.map((r: any) => r.categoria).filter(Boolean));
+    return Array.from(set);
+  }
+
+  contarReceitasPorCategoria(nome: string): number {
+    return this.listaReceitas.filter((r: any) => r.categoria === nome).length;
+  }
+
   // ─── Modal Gerenciar Categorias ──────────────────────────────────────────────
   modalCategoriasAberto = false;
   buscaCategoria = '';
@@ -111,11 +144,17 @@ export class ReceitasComponent implements OnInit {
 
   // ─── Busca e paginação ───────────────────────────────────────────────────────
   get receitasFiltradas(): any[] {
-    if (!this.searchQuery.trim()) return this.listaReceitas;
-    const q = this.searchQuery.toLowerCase();
-    return this.listaReceitas.filter(r =>
-      r.descricao.toLowerCase().includes(q) || r.fonte.toLowerCase().includes(q)
-    );
+    let lista = this.listaReceitas;
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      lista = lista.filter(r =>
+        r.descricao.toLowerCase().includes(q) || r.fonte.toLowerCase().includes(q)
+      );
+    }
+    if (this.categoriaSelecionada) {
+      lista = lista.filter(r => r.categoria === this.categoriaSelecionada);
+    }
+    return lista;
   }
 
   get receitasPaginadas(): any[] {
