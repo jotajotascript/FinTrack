@@ -1,33 +1,35 @@
 import { Injectable } from '@angular/core';
-import { Receita } from './receita.model';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { Receita, ReceitaRequest } from './receita.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReceitaService {
 
-  receitas: Receita[] = [];
+  private apiUrl = `${environment.apiUrl}/receita`;
 
-  adicionar(receita: Receita) {
-    this.receitas.push(receita);
+  constructor(private http: HttpClient) {}
+
+  listar(): Observable<Receita[]> {
+    return this.http.get<Receita[]>(this.apiUrl);
   }
 
-  listar() {
-    return this.receitas;
+  buscarPorId(id: string): Observable<Receita> {
+    return this.http.get<Receita>(`${this.apiUrl}/${id}`);
   }
 
-  excluir(id: number) {
-    this.receitas = this.receitas.filter(
-      receita => receita.id !== id
-    );
+  criar(dto: ReceitaRequest): Observable<Receita> {
+    return this.http.post<Receita>(this.apiUrl, dto);
   }
 
-  editar(receitaAtualizada: Receita) {
+  atualizar(id: string, dto: ReceitaRequest): Observable<Receita> {
+    return this.http.put<Receita>(`${this.apiUrl}/${id}`, dto);
+  }
 
-  const index = this.receitas.findIndex(
-    receita => receita.id === receitaAtualizada.id
-  );
-
-  this.receitas[index] = receitaAtualizada;
-}
+  deletar(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

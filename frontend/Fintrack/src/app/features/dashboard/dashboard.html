@@ -82,7 +82,7 @@
           <div class="flex items-center gap-xs text-tertiary text-sm"></div>
         </div>
 
-        <div class="card bg-surface-container p-lg rounded-xl border border-outline-variant flex flex-col gap-md">
+        <a routerLink="/receitas" [queryParams]="{novo: 'true'}" class="card bg-surface-container p-lg rounded-xl border border-outline-variant flex flex-col gap-md" style="text-decoration:none; cursor:pointer;">
           <div class="flex items-center justify-between">
             <span class="text-on-surface-variant font-medium">Receitas (Mês)</span>
             <div class="icon-badge bg-tertiary-badge rounded-lg flex items-center justify-center text-tertiary">
@@ -91,9 +91,9 @@
           </div>
           <p class="text-2xl font-bold text-white">{{ receitasMes | currency:'BRL':'symbol':'1.2-2' }}</p>
           <div class="flex items-center gap-xs text-tertiary text-sm"></div>
-        </div>
+        </a>
 
-        <div class="card bg-surface-container p-lg rounded-xl border border-outline-variant flex flex-col gap-md">
+        <a routerLink="/despesas" [queryParams]="{novo: 'true'}" class="card bg-surface-container p-lg rounded-xl border border-outline-variant flex flex-col gap-md" style="text-decoration:none; cursor:pointer;">
           <div class="flex items-center justify-between">
             <span class="text-on-surface-variant font-medium">Despesas (Mês)</span>
             <div class="icon-badge bg-error-badge rounded-lg flex items-center justify-center text-error">
@@ -102,8 +102,51 @@
           </div>
           <p class="text-2xl font-bold text-white">{{ despesasMes | currency:'BRL':'symbol':'1.2-2' }}</p>
           <div class="flex items-center gap-xs text-error text-sm"></div>
-        </div>
+        </a>
 
+      </section>
+
+      <!-- Transações Recentes -->
+      <section>
+        <div class="bg-surface-container p-lg rounded-xl border border-outline-variant flex flex-col gap-lg">
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold text-lg text-white">Transações Recentes</h3>
+            <div class="flex items-center gap-md">
+              <a routerLink="/receitas" style="font-size:12px; color:#60a5fa; text-decoration:none; font-weight:600;">Ver receitas</a>
+              <a routerLink="/despesas" style="font-size:12px; color:#f87171; text-decoration:none; font-weight:600;">Ver despesas</a>
+            </div>
+          </div>
+
+          @if (carregando) {
+            <p class="text-on-surface-variant text-sm">Carregando...</p>
+          } @else if (transacoesRecentes.length === 0) {
+            <div class="flex flex-col items-center" style="padding: 2rem 0; gap: 0.5rem;">
+              <span class="material-symbols-outlined" style="font-size:40px; color:#374151;">receipt_long</span>
+              <p class="text-on-surface-variant text-sm">Nenhuma transação cadastrada ainda.</p>
+            </div>
+          } @else {
+            <div style="display:flex; flex-direction:column; gap:0.5rem;">
+              @for (t of transacoesRecentes; track $index) {
+                <div class="transacao-item" [class.receita]="t.tipo === 'receita'" [class.despesa]="t.tipo === 'despesa'">
+                  <div class="transacao-icon">
+                    <span class="material-symbols-outlined" style="font-size:18px;">
+                      {{ t.tipo === 'receita' ? 'arrow_downward' : 'arrow_upward' }}
+                    </span>
+                  </div>
+                  <div style="flex:1; min-width:0;">
+                    <p class="text-on-surface text-sm font-medium truncate">{{ t.descricao }}</p>
+                    <p class="text-on-surface-variant" style="font-size:11px;">
+                      {{ formatarCategoria(t.categoria) }} · {{ formatarData(t.data) }}
+                    </p>
+                  </div>
+                  <p class="font-semibold text-sm" [class.text-tertiary]="t.tipo === 'receita'" [class.text-error]="t.tipo === 'despesa'">
+                    {{ t.tipo === 'receita' ? '+' : '-' }}{{ t.valor | currency:'BRL':'symbol':'1.2-2' }}
+                  </p>
+                </div>
+              }
+            </div>
+          }
+        </div>
       </section>
 
       <!-- Chart Section -->

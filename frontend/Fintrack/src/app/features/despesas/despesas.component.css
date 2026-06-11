@@ -993,3 +993,14 @@
   padding: 2px 7px;
   border-radius: 20px;
 }
+
+/* ── Animação de refresh ── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.spin {
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+}

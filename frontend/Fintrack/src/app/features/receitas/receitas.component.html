@@ -1,10 +1,8 @@
 <div class="page-wrapper">
 
-  <!-- Sidebar Navigation -->
   <aside class="sidebar">
     <div class="sidebar-top">
 
-      <!-- Brand -->
       <div class="brand">
         <div class="brand-icon">
           <img src="Logo.png" alt="FinTrack Logo" style="width: 3rem; height: 3rem; object-fit: contain;">
@@ -12,7 +10,6 @@
         <h1 class="brand-name">FinTrack</h1>
       </div>
 
-      <!-- Nav Links -->
       <nav class="nav-links">
         <a routerLink="/dashboard" class="nav-item">
           <span class="material-symbols-outlined">dashboard</span>
@@ -33,7 +30,6 @@
       </nav>
     </div>
 
-    <!-- Profile -->
     <div class="profile-card">
       <div class="profile-avatar">
         <span class="material-symbols-outlined" style="font-size:32px; color:#9ca3af;">person</span>
@@ -45,10 +41,8 @@
     </div>
   </aside>
 
-  <!-- Main Content -->
   <main class="main-content">
 
-    <!-- Top Bar -->
     <header class="topbar">
       <div class="topbar-left">
         <div class="search-wrapper">
@@ -56,13 +50,10 @@
           <input class="search-input" placeholder="Buscar receitas..." type="text" [(ngModel)]="searchQuery" />
         </div>
       </div>
-      
     </header>
 
-    <!-- Content Area -->
     <div class="content-area">
 
-      <!-- Page Header -->
       <div class="page-header">
         <div>
           <h2 class="page-title">Receitas</h2>
@@ -80,182 +71,166 @@
         </div>
       </div>
 
-      <!-- Stats Cards -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon stat-icon--tertiary">
-              <span class="material-symbols-outlined filled">payments</span>
+      <ng-container>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon stat-icon--tertiary">
+                <span class="material-symbols-outlined filled">payments</span>
+              </div>
+              <span class="stat-trend">+12% vs mês passado</span>
             </div>
-            <span class="stat-trend">+12% vs mês passado</span>
+            <p class="stat-label">Total Receitas (Mês)</p>
+            <h3 class="stat-value">{{ totalReceitas | currency:'BRL':'symbol':'1.2-2' }}</h3>
           </div>
-          <p class="stat-label">Total Receitas (Mês)</p>
-          <h3 class="stat-value">{{ totalReceitas | currency:'BRL':'symbol':'1.2-2' }}</h3>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon stat-icon--secondary">
-              <span class="material-symbols-outlined">repeat</span>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon stat-icon--secondary">
+                <span class="material-symbols-outlined">repeat</span>
+              </div>
             </div>
+            <p class="stat-label">Receitas Fixas</p>
+            <h3 class="stat-value">{{ totalFixas | currency:'BRL':'symbol':'1.2-2' }}</h3>
           </div>
-          <p class="stat-label">Receitas Fixas</p>
-          <h3 class="stat-value">{{ totalFixas | currency:'BRL':'symbol':'1.2-2' }}</h3>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon stat-icon--primary">
-              <span class="material-symbols-outlined">trending_up</span>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon stat-icon--primary">
+                <span class="material-symbols-outlined">trending_up</span>
+              </div>
             </div>
-          </div>
-          <p class="stat-label">Receitas Variáveis</p>
-          <h3 class="stat-value">{{ totalVariaveis | currency:'BRL':'symbol':'1.2-2' }}</h3>
-        </div>
-      </div>
-
-      <!-- Filters -->
-      <div class="table-filters">
-        <div class="filter-search-wrapper">
-          <span class="material-symbols-outlined">search</span>
-          <input class="filter-input" placeholder="Pesquisar por descrição ou fonte..." type="text" [(ngModel)]="searchQuery" />
-        </div>
-        <!-- Dropdown Filtro Categorias -->
-        <div class="categoria-filter-wrapper">
-          <button
-            class="btn-filter"
-            [class.btn-filter--active]="categoriaSelecionada"
-            (click)="toggleDropdownCategorias()"
-          >
-            <span class="material-symbols-outlined">filter_list</span>
-            {{ categoriaSelecionada || 'Categorias' }}
-            <span class="material-symbols-outlined">{{ dropdownCategoriasAberto ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</span>
-          </button>
-
-          <div *ngIf="dropdownCategoriasAberto" class="categoria-dropdown">
-            <div class="categoria-dropdown-header">
-              <span class="categoria-dropdown-title">Filtrar por Categoria</span>
-            </div>
-            <ul class="categoria-dropdown-list">
-              <li
-                class="categoria-dropdown-item"
-                [class.categoria-dropdown-item--active]="!categoriaSelecionada"
-                (click)="limparFiltroCategoria()"
-              >
-                <span class="material-symbols-outlined">apps</span>
-                Todas as categorias
-              </li>
-              <li
-                *ngFor="let cat of todasCategorias"
-                class="categoria-dropdown-item"
-                [class.categoria-dropdown-item--active]="categoriaSelecionada === cat.nome"
-                [class.categoria-dropdown-item--disabled]="!categoriasUsadasNasReceitas.includes(cat.nome)"
-                (click)="filtrarPorCategoria(cat.nome)"
-              >
-                <span class="material-symbols-outlined">{{ cat.icone }}</span>
-                {{ cat.nome }}
-                <span
-                  *ngIf="categoriasUsadasNasReceitas.includes(cat.nome)"
-                  class="categoria-dropdown-badge"
-                >
-                  {{ contarReceitasPorCategoria(cat.nome) }}
-                </span>
-              </li>
-            </ul>
+            <p class="stat-label">Receitas Variáveis</p>
+            <h3 class="stat-value">{{ totalVariaveis | currency:'BRL':'symbol':'1.2-2' }}</h3>
           </div>
         </div>
-      </div>
 
-      <!-- Table Section -->
-      <div class="table-card">
-        <div class="table-card-header">
-          <h4 class="table-card-title">Lista de Receitas</h4>
-        </div>
+        <div class="table-filters">
+          <div class="filter-search-wrapper">
+            <span class="material-symbols-outlined">search</span>
+            <input class="filter-input" placeholder="Pesquisar por descrição ou fonte..." type="text" [(ngModel)]="searchQuery" />
+          </div>
 
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Descrição / Nome</th>
-                <th>Valor</th>
-                <th>Data de Recebimento</th>
-                <th>Categoria</th>
-                <th>Tipo</th>
-                <th class="text-right">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let receita of receitasPaginadas" class="table-row">
-                <td>
-                  <p class="row-title">{{ receita.descricao }}</p>
-                  <p class="row-subtitle">{{ receita.fonte }}</p>
-                </td>
-                <td>
-                  <span class="row-valor">{{ receita.valor | currency:'BRL':'symbol':'1.2-2' }}</span>
-                </td>
-                <td>
-                  <span class="row-date">{{ receita.data }}</span>
-                </td>
-                <td>
-                  <span class="categoria-badge">
-                    <span class="material-symbols-outlined">{{ receita.categoriaIcone }}</span>
-                    {{ receita.categoria }}
+          <div class="categoria-filter-wrapper">
+            <button class="btn-filter" [class.btn-filter--active]="categoriaSelecionada" (click)="toggleDropdownCategorias()">
+              <span class="material-symbols-outlined">filter_list</span>
+              {{ categoriaSelecionada ? nomeCategoriaExibicao(categoriaSelecionada) : 'Categorias' }}
+              <span class="material-symbols-outlined">{{ dropdownCategoriasAberto ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</span>
+            </button>
+
+            <div *ngIf="dropdownCategoriasAberto" class="categoria-dropdown">
+              <div class="categoria-dropdown-header">
+                <span class="categoria-dropdown-title">Filtrar por Categoria</span>
+              </div>
+              <ul class="categoria-dropdown-list">
+                <li class="categoria-dropdown-item" [class.categoria-dropdown-item--active]="!categoriaSelecionada" (click)="limparFiltroCategoria()">
+                  <span class="material-symbols-outlined">apps</span>
+                  Todas as categorias
+                </li>
+                <li *ngFor="let cat of todasCategorias" class="categoria-dropdown-item"
+                    [class.categoria-dropdown-item--active]="categoriaSelecionada === cat.valor"
+                    [class.categoria-dropdown-item--disabled]="!categoriasUsadasNasReceitas.includes(cat.valor)"
+                    (click)="filtrarPorCategoria(cat.valor)">
+                  <span class="material-symbols-outlined">{{ cat.icone }}</span>
+                  {{ cat.nome }}
+                  <span *ngIf="categoriasUsadasNasReceitas.includes(cat.valor)" class="categoria-dropdown-badge">
+                    {{ contarReceitasPorCategoria(cat.valor) }}
                   </span>
-                </td>
-                <td>
-                  <div class="tipo-cell">
-                    <span class="tipo-label" [class.tipo-label--fixa]="receita.tipo === 'FIXA'">{{ receita.tipo }}</span>
-                    <span class="tipo-meta">{{ receita.recorrencia }}</span>
-                  </div>
-                </td>
-                <td class="text-right">
-                  <div class="acoes-cell">
-                    <button class="action-btn action-btn--edit" (click)="editarReceita(receita)" title="Editar">
-                      <span class="material-symbols-outlined">edit</span>
-                    </button>
-                    <button class="action-btn action-btn--delete" (click)="excluirReceita(receita.id)" title="Excluir">
-                      <span class="material-symbols-outlined">delete</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-
-              <tr *ngIf="receitasFiltradas.length === 0">
-                <td colspan="6" class="empty-state">
-                  <span class="material-symbols-outlined">inbox</span>
-                  <p>Nenhuma receita encontrada.</p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="pagination">
-          <p class="pagination-info">
-            Mostrando {{ inicioItem }}-{{ fimItem }} de {{ totalItens }} receitas
-          </p>
-          <div class="pagination-controls">
-            <button class="page-btn" [disabled]="paginaAtual === 1" (click)="irPagina(paginaAtual - 1)">
-              <span class="material-symbols-outlined">chevron_left</span>
-            </button>
-            <button
-              *ngFor="let p of paginasArray"
-              class="page-btn"
-              [class.page-btn--active]="paginaAtual === p"
-              (click)="irPagina(p)"
-            >{{ p }}</button>
-            <button class="page-btn" [disabled]="paginaAtual === totalPaginas" (click)="irPagina(paginaAtual + 1)">
-              <span class="material-symbols-outlined">chevron_right</span>
-            </button>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
+
+        <div class="table-card">
+          <div class="table-card-header">
+            <h4 class="table-card-title">Lista de Receitas</h4>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Descrição / Nome</th>
+                  <th>Valor</th>
+                  <th>Data de Recebimento</th>
+                  <th>Categoria</th>
+                  <th>Recorrência</th>
+                  <th class="text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let receiver of receitasPaginadas" class="table-row">
+                  <td>
+                    <p class="row-title">{{ receiver.descricao }}</p>
+                    <p class="row-subtitle">{{ receiver.tipoSubclasse }}</p>
+                  </td>
+                  <td>
+                    <span class="row-valor">{{ receiver.valorReceita | currency:'BRL':'symbol':'1.2-2' }}</span>
+                  </td>
+                  <td>
+                    <span class="row-date">{{ receiver.dataRecebimento | date:'dd/MM/yyyy' }}</span>
+                  </td>
+                  <td>
+                    <span class="categoria-badge">
+                      <span class="material-symbols-outlined">{{ iconeCategoria(receiver.categoria) }}</span>
+                      {{ nomeCategoriaExibicao(receiver.categoria) }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="tipo-cell">
+                      <span class="tipo-label" [class.tipo-label--fixa]="receiver.recorrencia === 'MENSAL' || receiver.recorrencia === 'SEMANAL'">
+                        {{ receiver.recorrencia === 'MENSAL' || receiver.recorrencia === 'SEMANAL' ? 'FIXA' : 'VARIÁVEL' }}
+                      </span>
+                      <span class="tipo-meta">{{ receiver.recorrencia }}</span>
+                    </div>
+                  </td>
+                  <td class="text-right">
+                    <div class="acoes-cell">
+                      <button class="action-btn action-btn--edit" (click)="editarReceita(receiver)" title="Editar">
+                        <span class="material-symbols-outlined">edit</span>
+                      </button>
+                      <button class="action-btn action-btn--delete" (click)="excluirReceita(receiver.id)" title="Excluir">
+                        <span class="material-symbols-outlined">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr *ngIf="receitasFiltradas.length === 0">
+                  <td colspan="6" class="empty-state">
+                    <span class="material-symbols-outlined">inbox</span>
+                    <p>Nenhuma receita encontrada.</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination">
+            <p class="pagination-info">
+              Mostrando {{ inicioItem }}-{{ fimItem }} de {{ totalItens }} receitas
+            </p>
+            <div class="pagination-controls">
+              <button class="page-btn" [disabled]="paginaAtual === 1" (click)="irPagina(paginaAtual - 1)">
+                <span class="material-symbols-outlined">chevron_left</span>
+              </button>
+              <button *ngFor="let p of paginasArray" class="page-btn" [class.page-btn--active]="paginaAtual === p" (click)="irPagina(p)">
+                {{ p }}
+              </button>
+              <button class="page-btn" [disabled]="paginaAtual === totalPaginas" (click)="irPagina(paginaAtual + 1)">
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
 
     </div>
   </main>
 
-  <!-- Modal Nova / Editar Receita -->
   <div *ngIf="modalAberto" class="modal-overlay" (click)="fecharModal()">
     <div class="modal-container modal-container--crud" (click)="$event.stopPropagation()">
 
@@ -280,7 +255,7 @@
       <div class="crud-body">
         <div class="crud-valor-wrapper">
           <label class="crud-label">Valor (R$)</label>
-          <input class="crud-valor-input" type="number" placeholder="0,00" [(ngModel)]="formulario.valor" min="0" step="0.01" />
+          <input class="crud-valor-input" type="number" placeholder="0,00" [(ngModel)]="formulario.valorReceita" min="0" step="0.01" />
         </div>
 
         <div class="crud-grid">
@@ -293,10 +268,14 @@
           </div>
 
           <div class="crud-field">
-            <label class="crud-label">Fonte / Origem</label>
+            <label class="crud-label">Tipo / Subclasse <span class="obrigatorio">*</span></label>
             <div class="crud-input-wrapper">
               <span class="material-symbols-outlined crud-input-icon">business</span>
-              <input class="crud-input" type="text" placeholder="Ex: Empresa XYZ..." [(ngModel)]="formulario.fonte" />
+              <select class="crud-input" [(ngModel)]="formulario.tipoSubclasse">
+                <option value="">Selecione a subclasse</option>
+                <option value="FIXA">Fixa</option>
+                <option value="VARIÁVEL">Variável</option>
+              </select>
             </div>
           </div>
 
@@ -304,7 +283,7 @@
             <label class="crud-label">Data de Recebimento <span class="obrigatorio">*</span></label>
             <div class="crud-input-wrapper">
               <span class="material-symbols-outlined crud-input-icon">calendar_today</span>
-              <input class="crud-input" type="date" [(ngModel)]="formulario.data" />
+              <input class="crud-input" type="date" [(ngModel)]="formulario.dataRecebimento" />
             </div>
           </div>
 
@@ -314,21 +293,19 @@
               <span class="material-symbols-outlined crud-input-icon">category</span>
               <select class="crud-input" [(ngModel)]="formulario.categoria" (change)="onCategoriaChange()">
                 <option value="">Selecione uma categoria</option>
-                <option *ngFor="let cat of todasCategorias" [value]="cat.nome">{{ cat.nome }}</option>
+                <option *ngFor="let cat of todasCategorias" [value]="cat.valor">{{ cat.nome }}</option>
               </select>
             </div>
           </div>
 
-          <div class="crud-field" *ngIf="formulario.tipo === 'FIXA'">
-            <label class="crud-label">Recorrência</label>
+          <div class="crud-field">
+            <label class="crud-label">Recorrência <span class="obrigatorio">*</span></label>
             <div class="crud-input-wrapper">
               <span class="material-symbols-outlined crud-input-icon">repeat</span>
               <select class="crud-input" [(ngModel)]="formulario.recorrencia">
-                <option value="Todo dia 05">Todo dia 05</option>
-                <option value="Todo dia 10">Todo dia 10</option>
-                <option value="Mensal variável">Mensal variável</option>
-                <option value="Semanal">Semanal</option>
-                <option value="Anual">Anual</option>
+                <option value="MENSAL">Mensal</option>
+                <option value="SEMANAL">Semanal</option>
+                <option value="ANUAL">Anual</option>
               </select>
             </div>
           </div>
@@ -346,7 +323,6 @@
     </div>
   </div>
 
-  <!-- Modal Gerenciar Categorias -->
   <div *ngIf="modalCategoriasAberto" class="modal-overlay" (click)="fecharModalCategorias()">
     <div class="modal-container" (click)="$event.stopPropagation()">
 
@@ -358,18 +334,12 @@
       </div>
 
       <div class="modal-body">
-
         <div>
           <label class="modal-add-label">Adicionar Nova Categoria</label>
           <div class="modal-add-row">
             <div class="modal-input-wrapper">
               <span class="material-symbols-outlined input-icon">category</span>
-              <input
-                class="modal-input"
-                type="text"
-                placeholder="Nome da nova categoria..."
-                [(ngModel)]="novaCategoriaNome"
-                (keyup.enter)="adicionarCategoria()" />
+              <input class="modal-input" type="text" placeholder="Nome da nova categoria..." [(ngModel)]="novaCategoriaNome" (keyup.enter)="adicionarCategoria()" />
             </div>
             <button class="modal-add-btn" (click)="adicionarCategoria()">
               <span class="material-symbols-outlined">add</span>
@@ -379,11 +349,7 @@
 
         <div class="modal-search-wrapper">
           <span class="material-symbols-outlined input-icon">search</span>
-          <input
-            class="modal-search"
-            type="text"
-            placeholder="Procurar categoria..."
-            [(ngModel)]="buscaCategoria" />
+          <input class="modal-search" type="text" placeholder="Procurar categoria..." [(ngModel)]="buscaCategoria" />
         </div>
 
         <div>
@@ -432,7 +398,6 @@
             </div>
           </div>
         </div>
-
       </div>
 
       <div class="modal-footer">
