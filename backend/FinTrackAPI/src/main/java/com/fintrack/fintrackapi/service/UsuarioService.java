@@ -3,6 +3,7 @@ package com.fintrack.fintrackapi.service;
 import com.fintrack.fintrackapi.dto.LoginRequestDTO;
 import com.fintrack.fintrackapi.dto.LoginResponseDTO; 
 import com.fintrack.fintrackapi.dto.UsuarioRequestDTO;
+import com.fintrack.fintrackapi.dto.UsuarioUpdateDTO;
 import com.fintrack.fintrackapi.entity.Usuario;
 import com.fintrack.fintrackapi.repository.UsuarioRepository;
 import com.fintrack.fintrackapi.security.JwtService;
@@ -50,5 +51,26 @@ public class UsuarioService {
     public void deletar() {
         Usuario usuario = authenticatedUserService.getUsuarioLogado();
         usuarioRepository.delete(usuario);
+    }
+
+    public Usuario atualizar(UsuarioUpdateDTO dto) {
+        Usuario usuario = authenticatedUserService.getUsuarioLogado();
+
+        if (dto.getNome() != null) {
+            usuario.setNome(dto.getNome());
+        }
+
+        if (dto.getEmail() != null) {
+            if (usuarioRepository.existsByEmail(dto.getEmail()) && !dto.getEmail().equals(usuario.getEmail())) {
+                throw new RuntimeException("Email já cadastrado");
+            }
+            usuario.setEmail(dto.getEmail());
+        }
+
+        if (dto.getSenha() != null) {
+            usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+        }
+
+        return usuarioRepository.save(usuario);
     }
 }

@@ -36,4 +36,9 @@ public class UsuarioController {
     public void deletar() {
         usuarioService.deletar();
     }
+
+    @PatchMapping
+    public Usuario atualizar(@RequestBody UsuarioUpdateDTO dto) {
+        return usuarioService.atualizar(dto);
+    }
 }
