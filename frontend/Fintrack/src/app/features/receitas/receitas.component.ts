@@ -1,16 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 
 import { ReceitaService } from './receita.service';
-import { Receita } from './receita.model';
+import { Receita, ReceitaRequest, CategoriaEnum, RecorrenciaEnum } from './receita.model';
 
 interface CategoriaFixa {
   nome: string;
   icone: string;
   cssClass: string;
   cor: string;
+  valor: CategoriaEnum;
 }
 
 interface CategoriaUsuario {
@@ -19,15 +20,15 @@ interface CategoriaUsuario {
 }
 
 type ReceitaForm = {
-  id: number;
+  id: string;
   descricao: string;
-  fonte: string;
-  valor: number | null;
-  data: string;
-  categoria: string;
+  tipoSubclasse: string;
+  valorReceita: number | null;
+  dataRecebimento: string;
+  categoria: CategoriaEnum | '';
   categoriaIcone: string;
   tipo: 'FIXA' | 'VARIÁVEL';
-  recorrencia: string;
+  recorrencia: RecorrenciaEnum;
 };
 
 @Component({
@@ -47,9 +48,11 @@ export class ReceitasComponent implements OnInit {
   modoEdicao = false;
   formulario: ReceitaForm = this.formVazio();
 
-  // ─── Filtro de Categoria (dropdown btn-filter) ───────────────────────────────
+  erro: string | null = null;
+
+  // ─── Filtro de Categoria ─────────────────────────────────────────────────────
   dropdownCategoriasAberto = false;
-  categoriaSelecionada = '';
+  categoriaSelecionada: CategoriaEnum | '' = '';
 
   toggleDropdownCategorias(): void {
     this.dropdownCategoriasAberto = !this.dropdownCategoriasAberto;
@@ -59,7 +62,7 @@ export class ReceitasComponent implements OnInit {
     this.dropdownCategoriasAberto = false;
   }
 
-  filtrarPorCategoria(nome: string): void {
+  filtrarPorCategoria(nome: CategoriaEnum): void {
     this.categoriaSelecionada = this.categoriaSelecionada === nome ? '' : nome;
     this.dropdownCategoriasAberto = false;
     this.paginaAtual = 1;
@@ -72,12 +75,12 @@ export class ReceitasComponent implements OnInit {
   }
 
   get categoriasUsadasNasReceitas(): string[] {
-    const set = new Set(this.listaReceitas.map((r: any) => r.categoria).filter(Boolean));
+    const set = new Set(this.listaReceitas.map(r => r.categoria).filter(Boolean));
     return Array.from(set);
   }
 
   contarReceitasPorCategoria(nome: string): number {
-    return this.listaReceitas.filter((r: any) => r.categoria === nome).length;
+    return this.listaReceitas.filter(r => r.categoria === nome).length;
   }
 
   // ─── Modal Gerenciar Categorias ──────────────────────────────────────────────
@@ -86,18 +89,23 @@ export class ReceitasComponent implements OnInit {
   novaCategoriaNome = '';
 
   categoriasFixas: CategoriaFixa[] = [
-    { nome: 'Trabalho',      icone: 'work',       cssClass: 'trabalho',      cor: 'primary'   },
-    { nome: 'Serviços',      icone: 'code',        cssClass: 'servicos',      cor: 'secondary' },
-    { nome: 'Investimentos', icone: 'show_chart',  cssClass: 'investimentos', cor: 'tertiary'  },
-    { nome: 'Aluguel',       icone: 'home',        cssClass: 'aluguel',       cor: 'secondary' },
+    { nome: 'Salário',     icone: 'work',           cssClass: 'trabalho',    cor: 'primary',   valor: 'SALARIO'     },
+    { nome: 'Alimentação', icone: 'restaurant',     cssClass: 'alimentacao', cor: 'secondary', valor: 'ALIMENTACAO' },
+    { nome: 'Saúde',       icone: 'favorite',       cssClass: 'saude',       cor: 'tertiary',  valor: 'SAUDE'       },
+    { nome: 'Transporte',  icone: 'directions_car', cssClass: 'transporte',  cor: 'secondary', valor: 'TRANSPORTE'  },
+    { nome: 'Lazer',       icone: 'beach_access',   cssClass: 'lazer',       cor: 'primary',   valor: 'LAZER'       },
+    { nome: 'Outros',      icone: 'category',       cssClass: 'outros',      cor: 'secondary', valor: 'OUTROS'      },
   ];
 
   categoriasUsuario: CategoriaUsuario[] = [];
 
-  get todasCategorias(): { nome: string; icone: string; cor: string }[] {
-    const fixas = this.categoriasFixas.map(c => ({ nome: c.nome, icone: c.icone, cor: c.cor }));
-    const usuario = this.categoriasUsuario.map(c => ({ nome: c.nome, icone: c.icone, cor: 'primary' }));
-    return [...fixas, ...usuario];
+  get todasCategorias(): { nome: string; icone: string; cor: string; valor: CategoriaEnum }[] {
+    return this.categoriasFixas.map(c => ({
+      nome: c.nome,
+      icone: c.icone,
+      cor: c.cor,
+      valor: c.valor
+    }));
   }
 
   get categoriasFixasFiltradas(): CategoriaFixa[] {
@@ -130,25 +138,45 @@ export class ReceitasComponent implements OnInit {
     this.categoriasUsuario.splice(index, 1);
   }
 
-  // ─── Dados de exemplo ────────────────────────────────────────────────────────
-  listaReceitas: any[] = [
-    { id: 1, descricao: 'Salário Mensal',        fonte: 'TechCorp International',  valor: 8500,  data: '05 Out 2023', categoria: 'Trabalho',      categoriaIcone: 'work',       tipo: 'FIXA',     recorrencia: 'Todo dia 05'     },
-    { id: 2, descricao: 'Venda de Freelance',    fonte: 'Projeto Dashboard Admin', valor: 3200,  data: '12 Out 2023', categoria: 'Serviços',      categoriaIcone: 'code',       tipo: 'VARIÁVEL', recorrencia: 'Única entrada'   },
-    { id: 3, descricao: 'Dividendos FIIs',       fonte: 'Carteira de Ativos X',    valor: 1300,  data: '15 Out 2023', categoria: 'Investimentos', categoriaIcone: 'show_chart', tipo: 'FIXA',     recorrencia: 'Mensal variável' },
-    { id: 4, descricao: 'Aluguel Imóvel Centro', fonte: 'Locatário: João Silva',   valor: 1250,  data: '10 Out 2023', categoria: 'Aluguel',       categoriaIcone: 'home',       tipo: 'FIXA',     recorrencia: 'Todo dia 10'     },
-  ];
+  // ─── Lista de receitas ───────────────────────────────────────────────────────
+  listaReceitas: Receita[] = [];
 
-  constructor(private receitaService: ReceitaService) {}
+  constructor(
+    private receitaService: ReceitaService,
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.carregarReceitas();
+    if (this.route.snapshot.queryParamMap.get('novo') === 'true') {
+      setTimeout(() => this.abrirModalNovaReceita(), 0);
+    }
+  }
+
+  carregarReceitas(): void {
+    this.erro = null;
+    this.receitaService.listar().subscribe({
+      next: (dados) => {
+        this.listaReceitas = dados;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error(err);
+        this.erro = 'Não foi possível carregar as receitas. Tente novamente.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
   // ─── Busca e paginação ───────────────────────────────────────────────────────
-  get receitasFiltradas(): any[] {
+  get receitasFiltradas(): Receita[] {
     let lista = this.listaReceitas;
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase();
       lista = lista.filter(r =>
-        r.descricao.toLowerCase().includes(q) || r.fonte.toLowerCase().includes(q)
+        r.descricao?.toLowerCase().includes(q) ||
+        r.tipoSubclasse?.toLowerCase().includes(q)
       );
     }
     if (this.categoriaSelecionada) {
@@ -157,7 +185,7 @@ export class ReceitasComponent implements OnInit {
     return lista;
   }
 
-  get receitasPaginadas(): any[] {
+  get receitasPaginadas(): Receita[] {
     const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
     return this.receitasFiltradas.slice(inicio, inicio + this.itensPorPagina);
   }
@@ -168,9 +196,9 @@ export class ReceitasComponent implements OnInit {
   get inicioItem(): number { return this.totalItens === 0 ? 0 : (this.paginaAtual - 1) * this.itensPorPagina + 1; }
   get fimItem(): number { return Math.min(this.paginaAtual * this.itensPorPagina, this.totalItens); }
 
-  get totalReceitas(): number { return this.listaReceitas.reduce((s, r) => s + r.valor, 0); }
-  get totalFixas(): number     { return this.listaReceitas.filter(r => r.tipo === 'FIXA').reduce((s, r) => s + r.valor, 0); }
-  get totalVariaveis(): number { return this.listaReceitas.filter(r => r.tipo === 'VARIÁVEL').reduce((s, r) => s + r.valor, 0); }
+  get totalReceitas(): number { return this.listaReceitas.reduce((s, r) => s + Number(r.valorReceita), 0); }
+  get totalFixas(): number     { return this.listaReceitas.filter(r => r.recorrencia !== 'ANUAL').reduce((s, r) => s + Number(r.valorReceita), 0); }
+  get totalVariaveis(): number { return this.listaReceitas.filter(r => r.recorrencia === 'ANUAL').reduce((s, r) => s + Number(r.valorReceita), 0); }
 
   irPagina(p: number): void {
     if (p >= 1 && p <= this.totalPaginas) this.paginaAtual = p;
@@ -178,7 +206,17 @@ export class ReceitasComponent implements OnInit {
 
   // ─── Modal CRUD ──────────────────────────────────────────────────────────────
   formVazio(): ReceitaForm {
-    return { id: 0, descricao: '', fonte: '', valor: null, data: '', categoria: '', categoriaIcone: '', tipo: 'FIXA', recorrencia: 'Todo dia 05' };
+    return {
+      id: '',
+      descricao: '',
+      tipoSubclasse: '',
+      valorReceita: null,
+      dataRecebimento: '',
+      categoria: '',
+      categoriaIcone: '',
+      tipo: 'FIXA',
+      recorrencia: 'MENSAL'
+    };
   }
 
   abrirModalNovaReceita(): void {
@@ -187,23 +225,41 @@ export class ReceitasComponent implements OnInit {
     this.modalAberto = true;
   }
 
-  editarReceita(r: any): void {
-    this.formulario = { ...r };
+  editarReceita(r: Receita): void {
+    this.formulario = {
+      id: r.id,
+      descricao: r.descricao,
+      tipoSubclasse: r.tipoSubclasse,
+      valorReceita: Number(r.valorReceita),
+      dataRecebimento: r.dataRecebimento,
+      categoria: r.categoria,
+      categoriaIcone: this.todasCategorias.find(c => c.valor === r.categoria)?.icone ?? 'category',
+      tipo: r.recorrencia === 'MENSAL' || r.recorrencia === 'SEMANAL' ? 'FIXA' : 'VARIÁVEL',
+      recorrencia: r.recorrencia
+    };
     this.modoEdicao = true;
     this.modalAberto = true;
   }
 
-  excluirReceita(id: number): void {
-    if (confirm('Deseja realmente excluir esta receita?')) {
-      this.listaReceitas = this.listaReceitas.filter(r => r.id !== id);
-      if (this.paginaAtual > this.totalPaginas) {
-        this.paginaAtual = this.totalPaginas;
+  excluirReceita(id: string): void {
+    if (!confirm('Deseja realmente excluir esta receita?')) return;
+    this.receitaService.deletar(id).subscribe({
+      next: () => {
+        this.listaReceitas = this.listaReceitas.filter(r => r.id !== id);
+        if (this.paginaAtual > this.totalPaginas) {
+          this.paginaAtual = this.totalPaginas;
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Erro ao excluir receita. Tente novamente.');
       }
-    }
+    });
   }
 
   onCategoriaChange(): void {
-    const cat = this.todasCategorias.find(c => c.nome === this.formulario.categoria);
+    const cat = this.todasCategorias.find(c => c.valor === this.formulario.categoria);
     if (cat) this.formulario.categoriaIcone = cat.icone;
   }
 
@@ -213,36 +269,67 @@ export class ReceitasComponent implements OnInit {
   }
 
   salvarReceita(): void {
-    if (!this.formulario.descricao.trim() || !this.formulario.valor || !this.formulario.data || !this.formulario.categoria) {
+    if (
+      !this.formulario.descricao.trim() ||
+      !this.formulario.valorReceita ||
+      !this.formulario.dataRecebimento ||
+      !this.formulario.categoria
+    ) {
       alert('Preencha todos os campos obrigatórios.');
       return;
     }
 
-    const cat = this.todasCategorias.find(c => c.nome === this.formulario.categoria);
+    const dto: ReceitaRequest = {
+      descricao: this.formulario.descricao,
+      valorReceita: this.formulario.valorReceita,
+      dataRecebimento: this.formulario.dataRecebimento,
+      categoria: this.formulario.categoria as CategoriaEnum,
+      tipoSubclasse: this.formulario.tipoSubclasse,
+      recorrencia: this.formulario.recorrencia
+    };
 
-    if (this.modoEdicao) {
-      const idx = this.listaReceitas.findIndex(r => r.id === this.formulario.id);
-      if (idx > -1) this.listaReceitas[idx] = {
-        ...this.formulario,
-        categoriaIcone: cat?.icone ?? 'category',
-        recorrencia: this.formulario.tipo === 'FIXA' ? this.formulario.recorrencia : 'Única entrada',
-      };
-    } else {
-      this.listaReceitas.push({
-        ...this.formulario,
-        id: Date.now(),
-        valor: this.formulario.valor ?? 0,
-        categoriaIcone: cat?.icone ?? 'category',
-        recorrencia: this.formulario.tipo === 'FIXA' ? this.formulario.recorrencia : 'Única entrada',
-      });
-      this.paginaAtual = this.totalPaginas;
-    }
+    const requisicao = this.modoEdicao
+      ? this.receitaService.atualizar(this.formulario.id, dto)
+      : this.receitaService.criar(dto);
 
-    this.fecharModal();
+    requisicao.subscribe({
+      next: (resultado) => {
+        if (this.modoEdicao) {
+          const idx = this.listaReceitas.findIndex(r => r.id === this.formulario.id);
+          if (idx > -1) this.listaReceitas[idx] = resultado;
+        } else {
+          this.listaReceitas.push(resultado);
+          this.paginaAtual = this.totalPaginas;
+        }
+        this.cdr.detectChanges();
+        this.fecharModal();
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Erro ao salvar receita. Tente novamente.');
+      }
+    });
   }
 
   // ─── Helpers ─────────────────────────────────────────────────────────────────
   formatarValor(valor: number): string {
-    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+
+  iconeCategoria(cat: string): string {
+    return this.todasCategorias.find(c => c.valor === cat)?.icone ?? 'category';
+  }
+
+  nomeCategoriaExibicao(cat: CategoriaEnum | ''): string {
+    if (!cat) return 'Categorias';
+    const mapa: Record<string, string> = {
+      SALARIO: 'Salário',
+      ALIMENTACAO: 'Alimentação',
+      SAUDE: 'Saúde',
+      TRANSPORTE: 'Transporte',
+      LAZER: 'Lazer',
+      OUTROS: 'Outros'
+    };
+    return mapa[cat] ?? cat;
   }
 }

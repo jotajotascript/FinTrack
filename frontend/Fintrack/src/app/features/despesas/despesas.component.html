@@ -1,4 +1,5 @@
 <div class="page-wrapper">
+
   <!-- Sidebar Navigation -->
   <aside class="sidebar">
     <div class="sidebar-top">
@@ -38,7 +39,6 @@
       </div>
       <div class="profile-info">
         <p class="profile-name">João Silva</p>
-        
       </div>
     </div>
   </aside>
@@ -53,10 +53,7 @@
           <input class="search-input" placeholder="Buscar despesas..." type="text" [(ngModel)]="searchQuery" />
         </div>
       </div>
-      <div class="topbar-right">
-        
-       
-      </div>
+      <div class="topbar-right"></div>
     </header>
 
     <!-- Content Area -->
@@ -80,193 +77,169 @@
         </div>
       </div>
 
-      <!-- Stats Cards -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-header">
-            <span class="stat-label">Total Despesas (Mês)</span>
-            <div class="stat-icon stat-icon--primary">
-              <span class="material-symbols-outlined">payments</span>
-            </div>
-          </div>
-          <p class="stat-value">R$ 4.250,00</p>
-          <div class="stat-trend stat-trend--positive">
-            <span class="material-symbols-outlined">trending_down</span>
-            <span>8% menor que mês passado</span>
-          </div>
-        </div>
+      <ng-container>
 
-        <div class="stat-card">
-          <div class="stat-header">
-            <span class="stat-label">Contas Fixas</span>
-            <div class="stat-icon stat-icon--secondary">
-              <span class="material-symbols-outlined">event_repeat</span>
-            </div>
-          </div>
-          <p class="stat-value">R$ 2.100,00</p>
-          <p class="stat-meta">12 despesas recorrentes</p>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-header">
-            <span class="stat-label">Contas Variáveis</span>
-            <div class="stat-icon stat-icon--tertiary">
-              <span class="material-symbols-outlined">shopping_bag</span>
-            </div>
-          </div>
-          <p class="stat-value">R$ 2.150,00</p>
-          <p class="stat-meta">Foco em alimentação e lazer</p>
-        </div>
-      </div>
-
-      <!-- Table Section -->
-      <div class="table-card">
-        <!-- Filters -->
-        <div class="table-filters">
-          <div class="filter-search-wrapper">
-            <span class="material-symbols-outlined">search</span>
-            <input
-              class="filter-input"
-              placeholder="Pesquisar por nome ou descrição..."
-              type="text"
-              [(ngModel)]="searchQuery"
-            />
-          </div>
-          <!-- Dropdown Filtro Categorias -->
-          <div class="categoria-filter-wrapper" (clickOutside)="fecharDropdownCategorias()">
-            <button
-              class="btn-filter"
-              [class.btn-filter--active]="categoriaSelecionada"
-              (click)="toggleDropdownCategorias()"
-            >
-              <span class="material-symbols-outlined">filter_list</span>
-              {{ categoriaSelecionada || 'Categorias' }}
-              <span class="material-symbols-outlined">{{ dropdownCategoriasAberto ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</span>
-            </button>
-
-            <div *ngIf="dropdownCategoriasAberto" class="categoria-dropdown">
-              <div class="categoria-dropdown-header">
-                <span class="categoria-dropdown-title">Filtrar por Categoria</span>
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Total Despesas (Mês)</span>
+              <div class="stat-icon stat-icon--primary">
+                <span class="material-symbols-outlined">payments</span>
               </div>
-              <ul class="categoria-dropdown-list">
-                <li
-                  class="categoria-dropdown-item"
-                  [class.categoria-dropdown-item--active]="!categoriaSelecionada"
-                  (click)="limparFiltroCategoria()"
-                >
-                  <span class="material-symbols-outlined">apps</span>
-                  Todas as categorias
-                </li>
-                <li
-                  *ngFor="let cat of todasCategorias"
-                  class="categoria-dropdown-item"
-                  [class.categoria-dropdown-item--active]="categoriaSelecionada === cat.nome"
-                  [class.categoria-dropdown-item--disabled]="!categoriasUsadasNasDespesas.includes(cat.nome)"
-                  (click)="filtrarPorCategoria(cat.nome)"
-                >
-                  <span class="material-symbols-outlined">{{ cat.icone }}</span>
-                  {{ cat.nome }}
-                  <span
-                    *ngIf="categoriasUsadasNasDespesas.includes(cat.nome)"
-                    class="categoria-dropdown-badge"
-                  >
-                    {{ contarDespesasPorCategoria(cat.nome) }}
-                  </span>
-                </li>
-              </ul>
+            </div>
+            <p class="stat-value">{{ totalDespesasMes | currency:'BRL':'symbol':'1.2-2' }}</p>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Contas Fixas</span>
+              <div class="stat-icon stat-icon--secondary">
+                <span class="material-symbols-outlined">event_repeat</span>
+              </div>
+            </div>
+            <p class="stat-value">{{ totalFixas | currency:'BRL':'symbol':'1.2-2' }}</p>
+            <p class="stat-meta">Recorrentes</p>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Contas Variáveis</span>
+              <div class="stat-icon stat-icon--tertiary">
+                <span class="material-symbols-outlined">shopping_bag</span>
+              </div>
+            </div>
+            <p class="stat-value">{{ totalVariaveis | currency:'BRL':'symbol':'1.2-2' }}</p>
+            <p class="stat-meta">Gastos pontuais</p>
+          </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-card">
+          <!-- Filters -->
+          <div class="table-filters">
+            <div class="filter-search-wrapper">
+              <span class="material-symbols-outlined">search</span>
+              <input class="filter-input" placeholder="Pesquisar por descrição ou categoria..." type="text" [(ngModel)]="searchQuery" />
+            </div>
+
+            <!-- Dropdown Filtro Categorias -->
+            <div class="categoria-filter-wrapper">
+              <button class="btn-filter" [class.btn-filter--active]="categoriaSelecionada" (click)="toggleDropdownCategorias()">
+                <span class="material-symbols-outlined">filter_list</span>
+                {{ categoriaSelecionada ? getCategoriaInfo(categoriaSelecionada).label : 'Categorias' }}
+                <span class="material-symbols-outlined">{{ dropdownCategoriasAberto ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</span>
+              </button>
+
+              <div *ngIf="dropdownCategoriasAberto" class="categoria-dropdown">
+                <div class="categoria-dropdown-header">
+                  <span class="categoria-dropdown-title">Filtrar por Categoria</span>
+                </div>
+                <ul class="categoria-dropdown-list">
+                  <li class="categoria-dropdown-item" [class.categoria-dropdown-item--active]="!categoriaSelecionada" (click)="limparFiltroCategoria()">
+                    <span class="material-symbols-outlined">apps</span>
+                    Todas as categorias
+                  </li>
+                  <li *ngFor="let cat of categorias" class="categoria-dropdown-item"
+                      [class.categoria-dropdown-item--active]="categoriaSelecionada === cat.valor"
+                      [class.categoria-dropdown-item--disabled]="!categoriasUsadasNasDespesas.includes(cat.valor)"
+                      (click)="filtrarPorCategoria(cat.valor)">
+                    <span class="material-symbols-outlined">{{ cat.icone }}</span>
+                    {{ cat.label }}
+                    <span *ngIf="categoriasUsadasNasDespesas.includes(cat.valor)" class="categoria-dropdown-badge">
+                      {{ contarDespesasPorCategoria(cat.valor) }}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Wrapper -->
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Descrição</th>
+                  <th>Valor</th>
+                  <th>Vencimento</th>
+                  <th>Categoria</th>
+                  <th>Tipo</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let despesa of despesasPaginadas" class="table-row">
+                  <td>
+                    <p class="row-title">{{ despesa.descricao }}</p>
+                    <p class="row-subtitle">{{ despesa.tipoSubclasse }}</p>
+                  </td>
+                  <td>
+                    <p class="row-valor">{{ despesa.valorDespesa | currency:'BRL':'symbol':'1.2-2' }}</p>
+                  </td>
+                  <td>
+                    <div class="vencimento-cell">
+                      <span class="material-symbols-outlined">calendar_today</span>
+                      <span>{{ despesa.dataVencimento | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="categoria-badge" [ngClass]="getCategoriaBadge(getCategoriaInfo(despesa.categoria).cor)">
+                      <span class="material-symbols-outlined">{{ getCategoriaInfo(despesa.categoria).icone }}</span>
+                      {{ getCategoriaInfo(despesa.categoria).label }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="tipo-cell">
+                      <span class="tipo-label" [class.tipo-label--fixa]="despesa.tipoSubclasse === 'FIXA'">
+                        {{ despesa.tipoSubclasse === 'FIXA' ? 'Fixa' : 'Variável' }}
+                      </span>
+                      <span class="tipo-meta">
+                        {{ despesa.recorrencia ? 'Recorrência: ' + despesa.recorrencia : 'Gasto pontual' }}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="acoes-cell">
+                      <button class="action-btn action-btn--edit" (click)="editarDespesa(despesa)" title="Editar">
+                        <span class="material-symbols-outlined">edit</span>
+                      </button>
+                      <button class="action-btn action-btn--delete" (click)="excluirDespesa(despesa.id)" title="Excluir">
+                        <span class="material-symbols-outlined">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr *ngIf="despesasFiltradas.length === 0">
+                  <td colspan="6" class="empty-state">
+                    <span class="material-symbols-outlined">inbox</span>
+                    <p>Nenhuma despesa encontrada.</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <p class="pagination-info">
+              Mostrando {{ inicioItem }}-{{ fimItem }} de {{ totalDespesas }} despesas
+            </p>
+            <div class="pagination-controls">
+              <button class="page-btn" [disabled]="paginaAtual === 1" (click)="irPagina(paginaAtual - 1)">
+                <span class="material-symbols-outlined">chevron_left</span>
+              </button>
+              <button *ngFor="let p of paginasArray" class="page-btn" [class.page-btn--active]="paginaAtual === p" (click)="irPagina(p)">
+                {{ p }}
+              </button>
+              <button class="page-btn" [disabled]="paginaAtual === totalPaginas" (click)="irPagina(paginaAtual + 1)">
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Table -->
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Descrição / Nome</th>
-                <th>Valor</th>
-                <th>Vencimento</th>
-                <th>Categoria</th>
-                <th>Tipo</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let despesa of despesasPaginadas" class="table-row">
-                <td>
-                  <p class="row-title">{{ despesa.nome }}</p>
-                  <p class="row-subtitle">{{ despesa.descricao }}</p>
-                </td>
-                <td>
-                  <p class="row-valor">{{ formatarValor(despesa.valor) }}</p>
-                </td>
-                <td>
-                  <div class="vencimento-cell" [class.vencimento-cell--vencido]="despesa.vencido">
-                    <span class="material-symbols-outlined">
-                      {{ despesa.vencido ? 'priority_high' : 'calendar_today' }}
-                    </span>
-                    <span>{{ despesa.vencimento }}</span>
-                  </div>
-                </td>
-                <td>
-                  <span class="categoria-badge" [ngClass]="getCategoriaBadge(despesa.categoriaCor)">
-                    <span class="material-symbols-outlined">{{ despesa.categoriaIcone }}</span>
-                    {{ despesa.categoria }}
-                  </span>
-                </td>
-                <td>
-                  <div class="tipo-cell">
-                    <span class="tipo-label" [class.tipo-label--fixa]="despesa.tipo === 'Fixa'">
-                      {{ despesa.tipo }}
-                    </span>
-                    <span class="tipo-meta">
-                      {{ despesa.tipo === 'Fixa' ? 'Recorrência: ' + despesa.recorrencia : 'Gasto pontual' }}
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <div class="acoes-cell">
-                    <button class="action-btn action-btn--edit" (click)="editarDespesa(despesa)" title="Editar">
-                      <span class="material-symbols-outlined">edit</span>
-                    </button>
-                    <button class="action-btn action-btn--delete" (click)="excluirDespesa(despesa.id)" title="Excluir">
-                      <span class="material-symbols-outlined">delete</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr *ngIf="despesasFiltradas.length === 0">
-                <td colspan="6" class="empty-state">
-                  <span class="material-symbols-outlined">inbox</span>
-                  <p>Nenhuma despesa encontrada.</p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="pagination">
-          <p class="pagination-info">
-            Mostrando {{ inicioItem }}-{{ fimItem }} de {{ totalDespesas }} despesas
-          </p>
-          <div class="pagination-controls">
-            <button class="page-btn" [disabled]="paginaAtual === 1" (click)="irPagina(paginaAtual - 1)">
-              <span class="material-symbols-outlined">chevron_left</span>
-            </button>
-            <button
-              *ngFor="let p of paginasArray"
-              class="page-btn"
-              [class.page-btn--active]="paginaAtual === p"
-              (click)="irPagina(p)"
-            >{{ p }}</button>
-            <button class="page-btn" [disabled]="paginaAtual === totalPaginas" (click)="irPagina(paginaAtual + 1)">
-              <span class="material-symbols-outlined">chevron_right</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
+      </ng-container>
     </div>
   </main>
 
@@ -282,73 +255,28 @@
       </div>
 
       <div class="crud-toggle">
-        <button
-          [class.active]="formulario.tipo === 'Fixa'"
-          (click)="formulario.tipo = 'Fixa'"
-        >
+        <button [class.active]="formulario.tipoSubclasse === 'FIXA'" (click)="formulario.tipoSubclasse = 'FIXA'">
           <span class="material-symbols-outlined">event_repeat</span>
           Despesa Fixa
         </button>
-        <button
-          [class.active]="formulario.tipo === 'Variável'"
-          (click)="formulario.tipo = 'Variável'"
-        >
+        <button [class.active]="formulario.tipoSubclasse === 'VARIAVEL'" (click)="formulario.tipoSubclasse = 'VARIAVEL'">
           <span class="material-symbols-outlined">shopping_bag</span>
           Despesa Variável
         </button>
       </div>
 
       <div class="crud-body">
-
         <div class="crud-valor-wrapper">
-          <label class="crud-label">Valor (R$)</label>
-          <input
-            class="crud-valor-input"
-            type="number"
-            placeholder="0,00"
-            [(ngModel)]="formulario.valor"
-            min="0"
-            step="0.01"
-          />
+          <label class="crud-label">Valor (R$) <span class="obrigatorio">*</span></label>
+          <input class="crud-valor-input" type="number" placeholder="0,00" [(ngModel)]="formulario.valorDespesa" min="0" step="0.01" />
         </div>
 
         <div class="crud-grid">
-
           <div class="crud-field">
-            <label class="crud-label">Nome da Despesa <span class="obrigatorio">*</span></label>
+            <label class="crud-label">Descrição <span class="obrigatorio">*</span></label>
             <div class="crud-input-wrapper">
               <span class="material-symbols-outlined crud-input-icon">receipt_long</span>
-              <input
-                class="crud-input"
-                type="text"
-                placeholder="Ex: Aluguel, Internet..."
-                [(ngModel)]="formulario.nome"
-              />
-            </div>
-          </div>
-
-          <div class="crud-field">
-            <label class="crud-label">Descrição</label>
-            <div class="crud-input-wrapper">
-              <span class="material-symbols-outlined crud-input-icon">notes</span>
-              <input
-                class="crud-input"
-                type="text"
-                placeholder="Detalhe opcional..."
-                [(ngModel)]="formulario.descricao"
-              />
-            </div>
-          </div>
-
-          <div class="crud-field">
-            <label class="crud-label">Data de Vencimento <span class="obrigatorio">*</span></label>
-            <div class="crud-input-wrapper">
-              <span class="material-symbols-outlined crud-input-icon">calendar_today</span>
-              <input
-                class="crud-input"
-                type="date"
-                [(ngModel)]="formulario.vencimento"
-              />
+              <input class="crud-input" type="text" placeholder="Ex: Aluguel, Internet, Supermercado..." [(ngModel)]="formulario.descricao" />
             </div>
           </div>
 
@@ -356,31 +284,32 @@
             <label class="crud-label">Categoria <span class="obrigatorio">*</span></label>
             <div class="crud-input-wrapper">
               <span class="material-symbols-outlined crud-input-icon">category</span>
-              <select
-                class="crud-input"
-                [(ngModel)]="formulario.categoria"
-                (change)="onCategoriaChange()"
-              >
+              <select class="crud-input" [(ngModel)]="formulario.categoria">
                 <option value="">Selecione uma categoria</option>
-                <option *ngFor="let cat of todasCategorias" [value]="cat.nome">
-                  {{ cat.nome }}
-                </option>
+                <option *ngFor="let cat of categorias" [value]="cat.valor">{{ cat.label }}</option>
               </select>
             </div>
           </div>
 
-          <div class="crud-field" *ngIf="formulario.tipo === 'Fixa'">
+          <div class="crud-field">
+            <label class="crud-label">Data de Vencimento <span class="obrigatorio">*</span></label>
+            <div class="crud-input-wrapper">
+              <span class="material-symbols-outlined crud-input-icon">calendar_today</span>
+              <input class="crud-input" type="date" [(ngModel)]="formulario.dataVencimento" />
+            </div>
+          </div>
+
+          <div class="crud-field" *ngIf="formulario.tipoSubclasse === 'FIXA'">
             <label class="crud-label">Recorrência</label>
             <div class="crud-input-wrapper">
               <span class="material-symbols-outlined crud-input-icon">repeat</span>
               <select class="crud-input" [(ngModel)]="formulario.recorrencia">
-                <option value="Semanal">Semanal</option>
-                <option value="Mensal">Mensal</option>
-                <option value="Anual">Anual</option>
+                <option value="SEMANAL">Semanal</option>
+                <option value="MENSAL">Mensal</option>
+                <option value="ANUAL">Anual</option>
               </select>
             </div>
           </div>
-
         </div>
       </div>
 
@@ -407,18 +336,12 @@
       </div>
 
       <div class="modal-body">
-
         <div>
           <label class="modal-add-label">Adicionar Nova Categoria</label>
           <div class="modal-add-row">
             <div class="modal-input-wrapper">
               <span class="material-symbols-outlined input-icon">category</span>
-              <input
-                class="modal-input"
-                type="text"
-                placeholder="Nome da nova categoria..."
-                [(ngModel)]="novaCategoriaNome"
-                (keyup.enter)="adicionarCategoria()" />
+              <input class="modal-input" type="text" placeholder="Nome da nova categoria..." [(ngModel)]="novaCategoriaNome" (keyup.enter)="adicionarCategoria()" />
             </div>
             <button class="modal-add-btn" (click)="adicionarCategoria()">
               <span class="material-symbols-outlined">add</span>
@@ -428,11 +351,7 @@
 
         <div class="modal-search-wrapper">
           <span class="material-symbols-outlined input-icon">search</span>
-          <input
-            class="modal-search"
-            type="text"
-            placeholder="Procurar categoria..."
-            [(ngModel)]="buscaCategoria" />
+          <input class="modal-search" type="text" placeholder="Procurar categoria..." [(ngModel)]="buscaCategoria" />
         </div>
 
         <div>
@@ -481,7 +400,6 @@
             </div>
           </div>
         </div>
-
       </div>
 
       <div class="modal-footer">
