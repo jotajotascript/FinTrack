@@ -1,59 +1,70 @@
 # Fintrack
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.9.
+Projeto gerado com [Angular CLI](https://github.com/angular/angular-cli) versão 21.2.9.
 
-## Development server
+## Servidor de desenvolvimento
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Para iniciar um servidor local de desenvolvimento, execute:
 
 ```bash
-ng generate component component-name
+# instalar dependências
+npm ci
+
+# iniciar (opções válidas: npm start ou npm run dev)
+npm start
+# ou
+npm run dev
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Abra o navegador em `http://localhost:4200/`. A aplicação recarrega automaticamente ao modificar arquivos-fonte.
+
+## Gerar código (scaffolding)
+
+Para gerar um novo componente, execute:
+
+```bash
+ng generate component nome-do-componente
+```
+
+Para ver todas as opções do Angular CLI:
 
 ```bash
 ng generate --help
 ```
 
-## Building
-
-To build the project run:
+## Build (produção)
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Os artefatos de build serão gerados em `dist/`. O build de produção realiza otimizações para performance.
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Executar testes unitários
 
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
+O projeto usa `Vitest`/Karma/Jasmine conforme configuração local para testes unitários.
+## Dicas de desenvolvimento
 
-For end-to-end (e2e) testing, run:
+ - Use `npm start` ou `npm run dev` conforme sua preferência/local setup.
+ - Configure a variável da API no frontend se necessário (ex.: `VITE_API_BASE_URL` ou equivalente) apontando para `http://localhost:8080` durante desenvolvimento.
+## Dicas de desenvolvimento
+
+- Use `npm start` ou `npm run dev` conforme sua preferência/local setup.
+- Configure a variável da API no frontend se necessário (ex.: `VITE_API_BASE_URL` ou equivalente) apontando para `http://localhost:8080` durante desenvolvimento.
+
+## Build e deploy
+
+O deploy está configurado para Vercel (arquivo `vercel.json`). Para produzir o build e hospedar localmente:
 
 ```bash
-ng e2e
+npm run build
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Recursos adicionais
 
-## Additional Resources
+Documentação do Angular CLI: https://angular.dev/tools/cli
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
