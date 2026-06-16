@@ -365,7 +365,6 @@
 :host ::ng-deep [class*="categoria-badge"],
 :host ::ng-deep td button[class*="categoria"],
 :host ::ng-deep td .categoria-btn {
-  /* 1. Reset completo para anular o comportamento padrão de tags <button> */
   background: none;
   border: none;
   outline: none;
@@ -376,29 +375,24 @@
   -moz-appearance: none;
   appearance: none;
 
-  /* 2. Alinhamento e Layout */
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   vertical-align: middle !important;
-  
-  /* 3. Proporções Identificadas em Receitas (Pílula Compacta) */
-  height: 24px !important;          /* Altura idêntica à de receitas */
-  padding: 0 12px !important;       /* Espaçamento interno idêntico */
-  border-radius: 999px !important;  /* Formato arredondado perfeito */
-  
-  /* 4. Tipografia e Texto */
+
+  height: 24px !important;
+  padding: 0 12px !important;
+  border-radius: 999px !important;
+
   font-size: 13px !important;
   font-weight: 500 !important;
   line-height: 1 !important;
   white-space: nowrap !important;
-  
-  /* Coloração base fallback para categorias criadas dinamicamente pelo usuário */
+
   background: rgba(59, 130, 246, 0.12) !important;
   color: #60a5fa !important;
 }
 
-/* Ajuste milimétrico dos ícones dentro do badge */
 :host ::ng-deep .categoria-badge i,
 :host ::ng-deep .categoria-badge .material-symbols-outlined,
 :host ::ng-deep [class*="categoria-badge"] .material-symbols-outlined,
@@ -411,19 +405,17 @@
   align-items: center !important;
   justify-content: center !important;
   line-height: 1 !important;
-  color: inherit !important;        /* O ícone assume a cor exata do texto */
+  color: inherit !important;
 }
 
 /* ─── MAPEAMENTO ESTÉTICO DE CORES (SISTEMA & USUÁRIO) ─── */
 
-/* Alimentação / Comida (Tom azul/esverdeado sutil conforme as imagens) */
 :host ::ng-deep [class*="alimentacao"],
 :host ::ng-deep [class*="comida"] {
   background: rgba(59, 130, 246, 0.12) !important;
   color: #60a5fa !important;
 }
 
-/* Garante o mesmo padrão visual do print de Receitas para qualquer categoria dinâmica */
 :host ::ng-deep [class*="categoria-"] {
   background: rgba(59, 130, 246, 0.12) !important;
   color: #60a5fa !important;

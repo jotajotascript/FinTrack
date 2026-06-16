@@ -102,12 +102,12 @@ export class ReceitasComponent implements OnInit {
 
   categoriasUsuario: CategoriaUsuario[] = [];
 
-  get todasCategorias(): { nome: string; icone: string; cor: string; valor: string }[] {
+  get todasCategorias(): { nome: string; icone: string; cor: string; valor: CategoriaEnum | string }[] {
     const fixas = this.categoriasFixas.map(c => ({
       nome: c.nome,
       icone: c.icone,
       cor: c.cor,
-      valor: c.valor as string
+      valor: c.valor as CategoriaEnum | string
     }));
     const usuario = this.categoriasUsuario.map(c => ({
       nome: c.nome,

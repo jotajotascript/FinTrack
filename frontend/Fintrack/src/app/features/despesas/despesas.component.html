@@ -246,7 +246,7 @@
 
       <div class="crud-body">
         <div class="crud-valor-wrapper">
-          <label class="crud-label">Valor (R$)</label>
+          <label class="crud-label">Valor (R$) <span class="obrigatorio">*</span></label>
           <input class="crud-valor-input" type="number" placeholder="0,00" [(ngModel)]="formulario.valorDespesa" min="0" step="0.01" (wheel)="bloquearScroll($event)" />
         </div>
 
@@ -359,12 +359,18 @@
                 <div class="cat-icon-wrap custom">
                   <span class="material-symbols-outlined">{{ cat.icone }}</span>
                 </div>
-                
                 <ng-container *ngIf="categoriaEmEdicao === null || categoriasUsuario.indexOf(cat) !== categoriaEmEdicao; else modoEdicao">
                   <span class="cat-name">{{ cat.nome }}</span>
                 </ng-container>
                 <ng-template #modoEdicao>
-                  <input class="cat-edit-input" type="text" [(ngModel)]="categoriaEdicaoNome" (keyup.enter)="confirmarEdicaoCategoria()" (keyup.escape)="cancelarEdicaoCategoria()" autofocus />
+                  <input
+                    class="cat-edit-input"
+                    type="text"
+                    [(ngModel)]="categoriaEdicaoNome"
+                    (keyup.enter)="confirmarEdicaoCategoria()"
+                    (keyup.escape)="cancelarEdicaoCategoria()"
+                    autofocus
+                  />
                 </ng-template>
               </div>
 

@@ -1,10 +1,16 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 
-// Importando o seu Service e as tipagens reais dele
-import { DespesaService, Despesa, DespesaRequest } from './despesa.service';
+import {
+  DespesaService,
+  Despesa,
+  DespesaRequest,
+  CategoriaEnum,
+  RecorrenciaEnum,
+  TipoSubclasse,
+} from './despesa.service';
 import { AuthService } from '../../core/services/auth';
 
 interface CategoriaFixa {
@@ -23,13 +29,12 @@ interface CategoriaUsuario {
 type DespesaForm = {
   id: string;
   descricao: string;
-  tipoSubclasse: 'FIXA' | 'VARIAVEL';
   valorDespesa: number | null;
-  dataVencimento: string; // Sincronizado com o seu Service e Backend
+  dataVencimento: string;
   categoria: string;
-  categoriaIcone: string;
+  tipoSubclasse: TipoSubclasse | '';
+  recorrencia: RecorrenciaEnum;
   tipo: 'FIXA' | 'VARIÁVEL';
-  recorrencia: 'MENSAL' | 'SEMANAL' | 'ANUAL';
 };
 
 @Component({
@@ -41,7 +46,11 @@ type DespesaForm = {
 })
 export class DespesasComponent implements OnInit {
 
-  nomeUsuario = 'Usuário';
+  listaDespesas: Despesa[] = [];
+  nomeUsuario = '';
+  carregando = false;
+  erro: string | null = null;
+
   searchQuery = '';
   paginaAtual = 1;
   itensPorPagina = 7;
@@ -50,46 +59,17 @@ export class DespesasComponent implements OnInit {
   modoEdicao = false;
   formulario: DespesaForm = this.formVazio();
 
-  erro: string | null = null;
-
   // ─── Filtro de Categoria ─────────────────────────────────────────────────────
   dropdownCategoriasAberto = false;
   categoriaSelecionada = '';
   categoriasUsadasNasDespesas: string[] = [];
 
-  toggleDropdownCategorias(): void {
-    this.dropdownCategoriasAberto = !this.dropdownCategoriasAberto;
-  }
-
-  fecharDropdownCategorias(): void {
-    this.dropdownCategoriasAberto = false;
-  }
-
-  filtrarPorCategoria(nome: string): void {
-    this.categoriaSelecionada = this.categoriaSelecionada === nome ? '' : nome;
-    this.dropdownCategoriasAberto = false;
-    this.paginaAtual = 1;
-  }
-
-  limparFiltroCategoria(): void {
-    this.categoriaSelecionada = '';
-    this.dropdownCategoriasAberto = false;
-    this.paginaAtual = 1;
-  }
-
-  atualizarCategoriasUsadas(): void {
-    const set = new Set(this.listaDespesas.map(d => this.extrairCategoriaReal(d)).filter(Boolean));
-    this.categoriasUsadasNasDespesas = Array.from(set);
-  }
-
-  contarDespesasPorCategoria(nome: string): number {
-    return this.listaDespesas.filter(d => this.extrairCategoriaReal(d) === nome).length;
-  }
-
   // ─── Modal Gerenciar Categorias ──────────────────────────────────────────────
   modalCategoriasAberto = false;
   buscaCategoria = '';
   novaCategoriaNome = '';
+  categoriaEmEdicao: number | null = null;
+  categoriaEdicaoNome = '';
 
   categoriasFixas: CategoriaFixa[] = [
     { nome: 'Alimentação', icone: 'restaurant',     cssClass: 'alimentacao', cor: 'primary',   valor: 'ALIMENTACAO' },
@@ -101,6 +81,30 @@ export class DespesasComponent implements OnInit {
   ];
 
   categoriasUsuario: CategoriaUsuario[] = [];
+
+  constructor(
+    private despesaService: DespesaService,
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  ngOnInit(): void {
+    this.nomeUsuario = this.authService.getNomeUsuario() ?? 'Usuário';
+    this.carregarCategoriasStorage();
+    this.carregarDespesas();
+    if (this.route.snapshot.queryParamMap.get('novo') === 'true') {
+      this.abrirModalNovaDespesa();
+    }
+  }
+
+  // ─── Categorias ──────────────────────────────────────────────────────────────
 
   get todasCategorias(): { nome: string; icone: string; cor: string; valor: string }[] {
     const fixas = this.categoriasFixas.map(c => ({
@@ -150,10 +154,6 @@ export class DespesasComponent implements OnInit {
     }
   }
 
-  bloquearScroll(event: WheelEvent): void {
-    (event.target as HTMLInputElement).blur();
-  }
-
   adicionarCategoria(): void {
     const nome = this.novaCategoriaNome.trim();
     if (!nome) return;
@@ -167,10 +167,8 @@ export class DespesasComponent implements OnInit {
     this.salvarCategoriasStorage();
   }
 
-  categoriaEmEdicao: number | null = null;
-  categoriaEdicaoNome = '';
-
   iniciarEdicaoCategoria(index: number): void {
+    // O índice recebido é relativo à lista filtrada; precisamos encontrar o índice real
     const cat = this.categoriasUsuarioFiltradas[index];
     const indexReal = this.categoriasUsuario.findIndex(c => c === cat);
     this.categoriaEmEdicao = indexReal;
@@ -191,41 +189,41 @@ export class DespesasComponent implements OnInit {
     this.categoriaEdicaoNome = '';
   }
 
-  // ─── Lista de despesas ───────────────────────────────────────────────────────
-  listaDespesas: Despesa[] = [];
+  // ─── Filtro de Categoria ─────────────────────────────────────────────────────
 
-  constructor(
-    private despesaService: DespesaService,
-    private authService: AuthService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+  toggleDropdownCategorias(): void {
+    this.dropdownCategoriasAberto = !this.dropdownCategoriasAberto;
   }
 
-  onTipoChange(tipo: 'FIXA' | 'VARIÁVEL'): void {
-    this.formulario.tipo = tipo;
-    if (tipo === 'VARIÁVEL') {
-      this.formulario.tipoSubclasse = 'VARIAVEL';
-      this.formulario.recorrencia = 'ANUAL';
-    } else {
-      this.formulario.tipoSubclasse = 'FIXA';
-      this.formulario.recorrencia = 'MENSAL';
-    }
+  fecharDropdownCategorias(): void {
+    this.dropdownCategoriasAberto = false;
   }
 
-  ngOnInit(): void {
-    this.nomeUsuario = this.authService.getNomeUsuario() ?? 'Usuário';
-    this.carregarCategoriasStorage();
-    this.carregarDespesas();
+  filtrarPorCategoria(nome: string): void {
+    this.categoriaSelecionada = this.categoriaSelecionada === nome ? '' : nome;
+    this.dropdownCategoriasAberto = false;
+    this.paginaAtual = 1;
   }
+
+  limparFiltroCategoria(): void {
+    this.categoriaSelecionada = '';
+    this.dropdownCategoriasAberto = false;
+    this.paginaAtual = 1;
+  }
+
+  atualizarCategoriasUsadas(): void {
+    const set = new Set(this.listaDespesas.map(d => this.extrairCategoriaReal(d)).filter(Boolean));
+    this.categoriasUsadasNasDespesas = Array.from(set);
+  }
+
+  contarDespesasPorCategoria(nome: string): number {
+    return this.listaDespesas.filter(d => this.extrairCategoriaReal(d) === nome).length;
+  }
+
+  // ─── Carregar despesas ───────────────────────────────────────────────────────
 
   carregarDespesas(): void {
     this.erro = null;
-    // Corrigido para chamar o método exato do seu Service: listarDespesas()
     this.despesaService.listarDespesas().subscribe({
       next: (dados: Despesa[]) => {
         this.listaDespesas = dados;
@@ -241,6 +239,7 @@ export class DespesasComponent implements OnInit {
   }
 
   // ─── Busca e paginação ───────────────────────────────────────────────────────
+
   get despesasFiltradas(): Despesa[] {
     let lista = this.listaDespesas;
     if (this.searchQuery.trim()) {
@@ -276,17 +275,17 @@ export class DespesasComponent implements OnInit {
   }
 
   // ─── Modal CRUD ──────────────────────────────────────────────────────────────
+
   formVazio(): DespesaForm {
     return {
       id: '',
       descricao: '',
-      tipoSubclasse: 'FIXA',
       valorDespesa: null,
       dataVencimento: '',
       categoria: '',
-      categoriaIcone: '',
+      tipoSubclasse: 'FIXA',
+      recorrencia: 'MENSAL',
       tipo: 'FIXA',
-      recorrencia: 'MENSAL'
     };
   }
 
@@ -296,17 +295,27 @@ export class DespesasComponent implements OnInit {
     this.modalAberto = true;
   }
 
+  onTipoChange(tipo: 'FIXA' | 'VARIÁVEL'): void {
+    this.formulario.tipo = tipo;
+    if (tipo === 'VARIÁVEL') {
+      this.formulario.tipoSubclasse = 'VARIAVEL';
+      this.formulario.recorrencia = 'ANUAL';
+    } else {
+      this.formulario.tipoSubclasse = 'FIXA';
+      this.formulario.recorrencia = 'MENSAL';
+    }
+  }
+
   editarDespesa(d: Despesa): void {
     this.formulario = {
       id: d.id,
       descricao: this.extrairDescricaoReal(d),
-      tipoSubclasse: d.tipoSubclasse as 'FIXA' | 'VARIAVEL',
+      tipoSubclasse: d.tipoSubclasse as TipoSubclasse,
       valorDespesa: Number(d.valorDespesa),
-      dataVencimento: d.dataVencimento, // Sincronizado
+      dataVencimento: d.dataVencimento,
       categoria: this.extrairCategoriaReal(d),
-      categoriaIcone: this.todasCategorias.find(c => c.valor === this.extrairCategoriaReal(d))?.icone ?? 'category',
       tipo: d.tipoSubclasse === 'FIXA' ? 'FIXA' : 'VARIÁVEL',
-      recorrencia: (d.recorrencia ?? 'MENSAL') as 'MENSAL' | 'SEMANAL' | 'ANUAL'
+      recorrencia: (d.recorrencia ?? 'MENSAL') as RecorrenciaEnum,
     };
     this.modoEdicao = true;
     this.modalAberto = true;
@@ -314,7 +323,6 @@ export class DespesasComponent implements OnInit {
 
   excluirDespesa(id: string): void {
     if (!confirm('Deseja realmente excluir esta despesa?')) return;
-    // Corrigido para o seu método do service: excluirDespesa()
     this.despesaService.excluirDespesa(id).subscribe({
       next: () => {
         this.listaDespesas = this.listaDespesas.filter(d => d.id !== id);
@@ -335,14 +343,15 @@ export class DespesasComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  onCategoriaChange(): void {
-    const cat = this.todasCategorias.find(c => c.valor === this.formulario.categoria);
-    if (cat) this.formulario.categoriaIcone = cat.icone;
-  }
+  onCategoriaChange(): void {}
 
   fecharModal(): void {
     this.modalAberto = false;
     this.formulario = this.formVazio();
+  }
+
+  bloquearScroll(event: WheelEvent): void {
+    (event.target as HTMLInputElement).blur();
   }
 
   salvarDespesa(): void {
@@ -358,23 +367,22 @@ export class DespesasComponent implements OnInit {
 
     const enumsAceitosPeloJava = ['ALIMENTACAO', 'TRANSPORTE', 'SAUDE', 'EDUCACAO', 'LAZER', 'OUTROS'];
     const ehCustomizada = !enumsAceitosPeloJava.includes(this.formulario.categoria);
-    
-    const categoriaFinalDTO = (ehCustomizada ? 'OUTROS' : this.formulario.categoria) as any;
-    
-    const descricaoFinalDTO = ehCustomizada 
+
+    const categoriaFinalDTO = (ehCustomizada ? 'OUTROS' : this.formulario.categoria) as CategoriaEnum;
+
+    const descricaoFinalDTO = ehCustomizada
       ? `${this.formulario.descricao.trim()}::[${this.formulario.categoria}]`
       : this.formulario.descricao.trim();
 
     const dto: DespesaRequest = {
       descricao: descricaoFinalDTO,
       valorDespesa: Number(this.formulario.valorDespesa),
-      dataVencimento: this.formulario.dataVencimento, // Sincronizado
+      dataVencimento: this.formulario.dataVencimento,
       categoria: categoriaFinalDTO,
-      tipoSubclasse: this.formulario.tipoSubclasse,
+      tipoSubclasse: this.formulario.tipoSubclasse as TipoSubclasse,
       recorrencia: this.formulario.tipoSubclasse === 'FIXA' ? this.formulario.recorrencia : undefined
     };
 
-    // Corrigido para usar atualizarDespesa() e salvarDespesa() do seu service
     const requisicao = this.modoEdicao
       ? this.despesaService.atualizarDespesa(this.formulario.id, dto)
       : this.despesaService.salvarDespesa(dto);
@@ -398,7 +406,8 @@ export class DespesasComponent implements OnInit {
     });
   }
 
-  // ─── Métodos Extratores de Tags Metadados ──────────────────────────────────────
+  // ─── Helpers ─────────────────────────────────────────────────────────────────
+
   extrairDescricaoReal(d: Despesa): string {
     if (!d.descricao) return '';
     if (d.descricao.includes('::[')) {
@@ -411,13 +420,12 @@ export class DespesasComponent implements OnInit {
     if (d.descricao && d.descricao.includes('::[')) {
       const partes = d.descricao.split('::[');
       if (partes[1]) {
-        return partes[1].replace(']', ''); 
+        return partes[1].replace(']', '');
       }
     }
     return d.categoria;
   }
 
-  // ─── Helpers para Renderização Dinâmica ─────────────────────────────────────────
   formatarValor(valor: number): string {
     return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
