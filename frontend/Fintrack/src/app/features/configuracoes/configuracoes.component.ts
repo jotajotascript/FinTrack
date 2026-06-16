@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../core/services/auth';
 
 @Component({
   selector: 'app-configuracoes',
@@ -14,6 +15,7 @@ import { environment } from '../../../environments/environment';
 })
 export class ConfiguracoesComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
+  private authService = inject(AuthService);
 
   nomeCompleto = '';
   email = '';
@@ -21,25 +23,25 @@ export class ConfiguracoesComponent implements OnInit {
   novaSenha = '';
   mostrarSenha = false;
 
-  private get token(): string | null {
-    return isPlatformBrowser(this.platformId) ? localStorage.getItem('token') : null;
-  }
-
   private get headers() {
+    const token = this.authService.getToken();
     return {
       'Content-Type': 'application/json',
-      ...(this.token ? { Authorization: `Bearer ${this.token}` } : {})
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
     };
   }
 
   ngOnInit(): void {
-    if (this.token) {
-      try {
-        const payload = JSON.parse(atob(this.token.split('.')[1]));
-        this.nomeCompleto = payload.nome ?? localStorage.getItem('nomeUsuario') ?? '';
-        this.email = payload.email ?? payload.sub ?? '';
-      } catch {
-        this.nomeCompleto = localStorage.getItem('nomeUsuario') ?? '';
+    if (isPlatformBrowser(this.platformId)) {
+      const token = this.authService.getToken();
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          this.nomeCompleto = payload.nome ?? this.authService.getNomeUsuario() ?? '';
+          this.email = payload.email ?? payload.sub ?? '';
+        } catch {
+          this.nomeCompleto = this.authService.getNomeUsuario() ?? '';
+        }
       }
     }
   }
@@ -52,7 +54,9 @@ export class ConfiguracoesComponent implements OnInit {
         body: JSON.stringify({ nome: this.nomeCompleto, email: this.email })
       });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).mensagem ?? `Erro ${res.status}`);
-      if (isPlatformBrowser(this.platformId)) localStorage.setItem('nomeUsuario', this.nomeCompleto);
+      if (isPlatformBrowser(this.platformId)) {
+        localStorage.setItem('nomeUsuario', this.nomeCompleto);
+      }
       alert('Alterações salvas!');
     } catch (err: any) {
       alert(err.message);
@@ -60,17 +64,20 @@ export class ConfiguracoesComponent implements OnInit {
   }
 
   async alterarSenha(): Promise<void> {
-    if (!this.senhaAtual || !this.novaSenha) { alert('Preencha os dois campos de senha.'); return; }
+    if (!this.senhaAtual || !this.novaSenha) {
+      alert('Preencha os dois campos de senha.');
+      return;
+    }
     try {
       const res = await fetch(`${environment.apiUrl}/usuario`, {
         method: 'PATCH',
         headers: this.headers,
-        body: JSON.stringify({ senhaAtual: this.senhaAtual, novaSenha: this.novaSenha })
+        body: JSON.stringify({ senhaAtual: this.senhaAtual, senha: this.novaSenha })
       });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).mensagem ?? `Erro ${res.status}`);
       this.senhaAtual = '';
       this.novaSenha = '';
-      alert('Senha alterada!');
+      alert('Senha alterada com sucesso!');
     } catch (err: any) {
       alert(err.message);
     }
@@ -84,10 +91,7 @@ export class ConfiguracoesComponent implements OnInit {
         headers: this.headers
       });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).mensagem ?? `Erro ${res.status}`);
-      if (isPlatformBrowser(this.platformId)) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('nomeUsuario');
-      }
+      this.authService.logout();
       window.location.href = '/login';
     } catch (err: any) {
       alert(err.message);
