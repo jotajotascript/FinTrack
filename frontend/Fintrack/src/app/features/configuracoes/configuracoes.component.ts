@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth';
+
 @Component({
   selector: 'app-configuracoes',
   standalone: true,
@@ -15,11 +16,13 @@ import { AuthService } from '../../core/services/auth';
 export class ConfiguracoesComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private authService = inject(AuthService);
+
   nomeCompleto = '';
   email = '';
   senhaAtual = '';
   novaSenha = '';
   mostrarSenha = false;
+
   private get headers() {
     const token = this.authService.getToken();
     return {
@@ -27,6 +30,7 @@ export class ConfiguracoesComponent implements OnInit {
       ...(token ? { Authorization: `Bearer ${token}` } : {})
     };
   }
+
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       const token = this.authService.getToken();
@@ -41,6 +45,7 @@ export class ConfiguracoesComponent implements OnInit {
       }
     }
   }
+
   async salvarInformacoes(): Promise<void> {
     try {
       const res = await fetch(`${environment.apiUrl}/usuario`, {
@@ -57,6 +62,7 @@ export class ConfiguracoesComponent implements OnInit {
       alert(err.message);
     }
   }
+
   async alterarSenha(): Promise<void> {
     if (!this.senhaAtual || !this.novaSenha) {
       alert('Preencha os dois campos de senha.');
@@ -76,6 +82,7 @@ export class ConfiguracoesComponent implements OnInit {
       alert(err.message);
     }
   }
+
   async excluirConta(): Promise<void> {
     if (!confirm('Tem certeza? Esta ação não pode ser desfeita.')) return;
     try {
