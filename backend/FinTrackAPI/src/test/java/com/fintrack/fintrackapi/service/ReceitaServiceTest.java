@@ -4,7 +4,6 @@ import com.fintrack.fintrackapi.dto.ReceitaRequestDTO;
 import com.fintrack.fintrackapi.dto.ReceitaResponseDTO;
 import com.fintrack.fintrackapi.entity.Receita;
 import com.fintrack.fintrackapi.entity.Usuario;
-import com.fintrack.fintrackapi.entity.enums.CategoriaEnum;
 import com.fintrack.fintrackapi.entity.enums.RecorrenciaEnum;
 import com.fintrack.fintrackapi.repository.ReceitaRepository;
 import com.fintrack.fintrackapi.security.AuthenticatedUserService;
@@ -51,7 +50,10 @@ class ReceitaServiceTest {
                 .usuarioId(usuarioId)
                 .valorReceita(new BigDecimal("3000.00"))
                 .dataRecebimento(LocalDate.of(2025, 6, 5))
-                .categoria(CategoriaEnum.SALARIO)
+                
+                // CORRIGIDO: Alterado de CategoriaEnum para String pura
+                .categoria("Salário")
+                
                 .tipoSubclasse("CLT")
                 .recorrencia(RecorrenciaEnum.MENSAL)
                 .descricao("Salário mensal")
@@ -62,7 +64,10 @@ class ReceitaServiceTest {
         ReceitaRequestDTO dto = new ReceitaRequestDTO();
         dto.setValorReceita(new BigDecimal("3000.00"));
         dto.setDataRecebimento(LocalDate.of(2025, 6, 5));
-        dto.setCategoria(CategoriaEnum.SALARIO);
+        
+        // CORRIGIDO: Alterado de CategoriaEnum para String pura
+        dto.setCategoria("Salário");
+        
         dto.setTipoSubclasse("CLT");
         dto.setRecorrencia(RecorrenciaEnum.MENSAL);
         dto.setDescricao("Salário mensal");

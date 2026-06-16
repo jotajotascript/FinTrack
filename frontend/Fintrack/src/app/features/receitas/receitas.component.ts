@@ -102,12 +102,12 @@ export class ReceitasComponent implements OnInit {
 
   categoriasUsuario: CategoriaUsuario[] = [];
 
-  get todasCategorias(): { nome: string; icone: string; cor: string; valor: CategoriaEnum | string }[] {
+  get todasCategorias(): { nome: string; icone: string; cor: string; valor: string }[] {
     const fixas = this.categoriasFixas.map(c => ({
       nome: c.nome,
       icone: c.icone,
       cor: c.cor,
-      valor: c.valor as CategoriaEnum | string
+      valor: c.valor as string
     }));
     const usuario = this.categoriasUsuario.map(c => ({
       nome: c.nome,
@@ -210,7 +210,7 @@ export class ReceitasComponent implements OnInit {
   onTipoChange(tipo: 'FIXA' | 'VARIÁVEL'): void {
     this.formulario.tipo = tipo;
     if (tipo === 'VARIÁVEL') {
-      this.formulario.tipoSubclasse = 'VARIÁVEL';
+      this.formulario.tipoSubclasse = 'VARIAVEL';
       this.formulario.recorrencia = 'ANUAL';
     } else {
       this.formulario.tipoSubclasse = 'FIXA';
@@ -283,7 +283,7 @@ export class ReceitasComponent implements OnInit {
     return {
       id: '',
       descricao: '',
-      tipoSubclasse: 'FIXA',
+      tipoSubclasse: 'FIXA', // valores aceitos pelo banco: 'FIXA' | 'VARIAVEL'
       valorReceita: null,
       dataRecebimento: '',
       categoria: '',
@@ -300,15 +300,16 @@ export class ReceitasComponent implements OnInit {
   }
 
   editarReceita(r: Receita): void {
+    const tipoDisplay: 'FIXA' | 'VARIÁVEL' = (r.tipoSubclasse === 'VARIAVEL' || r.recorrencia === 'ANUAL') ? 'VARIÁVEL' : 'FIXA';
     this.formulario = {
       id: r.id,
       descricao: this.extrairDescricaoReal(r),
-      tipoSubclasse: r.tipoSubclasse,
+      tipoSubclasse: r.tipoSubclasse, // valor do banco: 'FIXA' ou 'VARIAVEL'
       valorReceita: Number(r.valorReceita),
       dataRecebimento: r.dataRecebimento,
       categoria: this.extrairCategoriaReal(r),
       categoriaIcone: this.todasCategorias.find(c => c.valor === this.extrairCategoriaReal(r))?.icone ?? 'category',
-      tipo: r.recorrencia === 'MENSAL' || r.recorrencia === 'SEMANAL' ? 'FIXA' : 'VARIÁVEL',
+      tipo: tipoDisplay,
       recorrencia: r.recorrencia
     };
     this.modoEdicao = true;
@@ -369,7 +370,7 @@ export class ReceitasComponent implements OnInit {
       valorReceita: Number(this.formulario.valorReceita),
       dataRecebimento: this.formulario.dataRecebimento,
       categoria: categoriaFinalDTO,
-      tipoSubclasse: this.formulario.tipo === 'VARIÁVEL' ? 'VARIÁVEL' : 'FIXA',
+      tipoSubclasse: this.formulario.tipo === 'VARIÁVEL' ? 'VARIAVEL' : 'FIXA',
       recorrencia: this.formulario.recorrencia
     };
 

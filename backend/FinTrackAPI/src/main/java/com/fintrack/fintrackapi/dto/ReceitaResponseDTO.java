@@ -1,6 +1,5 @@
 package com.fintrack.fintrackapi.dto;
 
-import com.fintrack.fintrackapi.entity.enums.CategoriaEnum;
 import com.fintrack.fintrackapi.entity.enums.RecorrenciaEnum;
 import lombok.Data;
 
@@ -15,7 +14,7 @@ public class ReceitaResponseDTO {
     private UUID usuarioId;
     private BigDecimal valorReceita;
     private LocalDate dataRecebimento;
-    private CategoriaEnum categoria;
+    private String categoria;
     private String tipoSubclasse;
     private RecorrenciaEnum recorrencia;
     private String descricao;

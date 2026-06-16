@@ -2,7 +2,6 @@ package com.fintrack.fintrackapi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fintrack.fintrackapi.dto.ReceitaRequestDTO;
-import com.fintrack.fintrackapi.entity.enums.CategoriaEnum;
 import com.fintrack.fintrackapi.entity.enums.RecorrenciaEnum;
 import com.fintrack.fintrackapi.security.JwtService;
 import com.fintrack.fintrackapi.entity.Usuario;
@@ -58,7 +57,10 @@ class ReceitaControllerTest {
         ReceitaRequestDTO dto = new ReceitaRequestDTO();
         dto.setValorReceita(new BigDecimal("3000.00"));
         dto.setDataRecebimento(LocalDate.of(2025, 6, 5));
-        dto.setCategoria(CategoriaEnum.SALARIO);
+        
+        // CORRIGIDO: Agora aceita uma String dinâmica (como as criadas pelo usuário)
+        dto.setCategoria("Salário"); 
+        
         dto.setTipoSubclasse("CLT");
         dto.setRecorrencia(RecorrenciaEnum.MENSAL);
         dto.setDescricao("Salário mensal");

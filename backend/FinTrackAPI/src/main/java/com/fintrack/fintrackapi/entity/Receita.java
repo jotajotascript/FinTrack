@@ -1,6 +1,5 @@
 package com.fintrack.fintrackapi.entity;
 
-import com.fintrack.fintrackapi.entity.enums.CategoriaEnum;
 import com.fintrack.fintrackapi.entity.enums.RecorrenciaEnum;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,11 +31,10 @@ public class Receita {
     @Column(name = "data_recebimento", nullable = false)
     private LocalDate dataRecebimento;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CategoriaEnum categoria;
+    private String categoria;
 
-    @Column(name = "tipo_subclasse", nullable = false)
+    @Column(name = "tipo_subclasse", nullable = true)
     private String tipoSubclasse;
 
     @Enumerated(EnumType.STRING)

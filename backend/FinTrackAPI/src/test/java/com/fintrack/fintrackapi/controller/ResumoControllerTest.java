@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fintrack.fintrackapi.dto.DespesaRequestDTO;
 import com.fintrack.fintrackapi.dto.ReceitaRequestDTO;
 import com.fintrack.fintrackapi.entity.Usuario;
-import com.fintrack.fintrackapi.entity.enums.CategoriaEnum;
 import com.fintrack.fintrackapi.entity.enums.RecorrenciaEnum;
 import com.fintrack.fintrackapi.repository.UsuarioRepository;
 import com.fintrack.fintrackapi.security.JwtService;
@@ -60,7 +59,7 @@ class ResumoControllerTest {
         ReceitaRequestDTO receita = new ReceitaRequestDTO();
         receita.setValorReceita(new BigDecimal("3000.00"));
         receita.setDataRecebimento(LocalDate.of(2025, 6, 5));
-        receita.setCategoria(CategoriaEnum.SALARIO);
+        receita.setCategoria("SALARIO");
         receita.setTipoSubclasse("CLT");
         receita.setRecorrencia(RecorrenciaEnum.MENSAL);
         receita.setDescricao("Salário");
@@ -75,7 +74,7 @@ class ResumoControllerTest {
         DespesaRequestDTO despesa = new DespesaRequestDTO();
         despesa.setValorDespesa(new BigDecimal("1000.00"));
         despesa.setDataVencimento(LocalDate.of(2025, 6, 10));
-        despesa.setCategoria(CategoriaEnum.OUTROS);
+        despesa.setCategoria("OUTROS");
         despesa.setTipoSubclasse("Aluguel");
         despesa.setRecorrencia(RecorrenciaEnum.MENSAL);
         despesa.setDescricao("Aluguel");
