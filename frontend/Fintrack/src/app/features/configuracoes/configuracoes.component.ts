@@ -33,7 +33,6 @@ export class ConfiguracoesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Lê nome e email direto do payload do JWT — não depende de rota extra
     if (this.token) {
       try {
         const payload = JSON.parse(atob(this.token.split('.')[1]));
@@ -47,7 +46,7 @@ export class ConfiguracoesComponent implements OnInit {
 
   async salvarInformacoes(): Promise<void> {
     try {
-      const res = await fetch(`${environment.apiUrl}/usuario/perfil`, {
+      const res = await fetch(`${environment.apiUrl}/usuario`, {
         method: 'PATCH',
         headers: this.headers,
         body: JSON.stringify({ nome: this.nomeCompleto, email: this.email })
@@ -63,7 +62,7 @@ export class ConfiguracoesComponent implements OnInit {
   async alterarSenha(): Promise<void> {
     if (!this.senhaAtual || !this.novaSenha) { alert('Preencha os dois campos de senha.'); return; }
     try {
-      const res = await fetch(`${environment.apiUrl}/usuario/senha`, {
+      const res = await fetch(`${environment.apiUrl}/usuario`, {
         method: 'PATCH',
         headers: this.headers,
         body: JSON.stringify({ senhaAtual: this.senhaAtual, novaSenha: this.novaSenha })
