@@ -165,7 +165,7 @@
               <tbody>
                 <tr *ngFor="let receiver of receitasPaginadas" class="table-row">
                   <td>
-                    <p class="row-title">{{ receiver.descricao }}</p>
+                    <p class="row-title">{{ extrairDescricaoReal(receiver) }}</p>
                     <p class="row-subtitle">{{ receiver.tipoSubclasse }}</p>
                   </td>
                   <td>
@@ -176,8 +176,8 @@
                   </td>
                   <td>
                     <span class="categoria-badge">
-                      <span class="material-symbols-outlined">{{ iconeCategoria(receiver.categoria) }}</span>
-                      {{ nomeCategoriaExibicao(receiver.categoria) }}
+                      <span class="material-symbols-outlined">{{ iconeCategoria(extrairCategoriaReal(receiver)) }}</span>
+                      {{ nomeCategoriaExibicao(extrairCategoriaReal(receiver)) }}
                     </span>
                   </td>
                   <td>
@@ -268,7 +268,6 @@
               <input class="crud-input" type="text" placeholder="Ex: Salário, Freelance..." [(ngModel)]="formulario.descricao" />
             </div>
           </div>
-
 
           <div class="crud-field">
             <label class="crud-label">Data de Recebimento <span class="obrigatorio">*</span></label>

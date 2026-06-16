@@ -16,7 +16,6 @@
 }
 
 /* SIDEBAR */
-
 .sidebar {
   width: 280px;
   background: #111827;
@@ -57,7 +56,6 @@
 }
 
 /* NAV */
-
 .nav-links {
   display: flex;
   flex-direction: column;
@@ -87,7 +85,6 @@
 }
 
 /* PROFILE */
-
 .profile-card {
   display: flex;
   align-items: center;
@@ -122,7 +119,6 @@
 }
 
 /* MAIN */
-
 .main-content {
   flex: 1;
   display: flex;
@@ -131,7 +127,6 @@
 }
 
 /* TOPBAR */
-
 .topbar {
   height: 64px;
   background: #111827;
@@ -222,7 +217,6 @@
 }
 
 /* CONTENT AREA */
-
 .content-area {
   flex: 1;
   overflow-y: auto;
@@ -233,7 +227,6 @@
 }
 
 /* PAGE HEADER */
-
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -259,7 +252,6 @@
 }
 
 /* BUTTONS */
-
 .btn-primary,
 .btn-secondary,
 .btn-filter,
@@ -327,7 +319,6 @@
 }
 
 /* CARDS */
-
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -381,7 +372,6 @@
 }
 
 /* TABLE */
-
 .table-filters {
   display: flex;
   gap: 12px;
@@ -491,30 +481,63 @@
   color: #d9e3f6;
 }
 
-/* BADGES */
+/* ─── IGUALAR PROPORÇÕES DOS BADGES DE CATEGORIA (RECEITAS VS DESPESAS) ─── */
+:host ::ng-deep .categoria-badge,
+:host ::ng-deep [class*="categoria-badge"],
+:host ::ng-deep td button[class*="categoria"],
+:host ::ng-deep td .categoria-btn {
+  background: none;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  cursor: default;
+  box-shadow: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 
-.categoria-badge {
-  padding: 6px 12px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  background: rgba(59, 130, 246, 0.2);
-  color: #93c5fd;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+
+  height: 24px !important;
+  padding: 0 12px !important;
+  border-radius: 999px !important;
+
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+
+  background: rgba(59, 130, 246, 0.12) !important;
+  color: #60a5fa !important;
 }
 
-.categoria-badge .material-symbols-outlined {
-  font-size: 14px;
+:host ::ng-deep .categoria-badge i,
+:host ::ng-deep .categoria-badge .material-symbols-outlined,
+:host ::ng-deep [class*="categoria-badge"] .material-symbols-outlined,
+:host ::ng-deep td button[class*="categoria"] svg {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  margin-right: 5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  color: inherit !important;
 }
 
-.categoria-primary   { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
-.categoria-secondary { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
-.categoria-tertiary  { background: rgba(245, 158, 11, 0.2);  color: #fcd34d; }
+:host ::ng-deep [class*="categoria-primary"],
+:host ::ng-deep [class*="categoria-secondary"],
+:host ::ng-deep [class*="categoria-tertiary"],
+:host ::ng-deep [class*="categoria-"] {
+  background: rgba(59, 130, 246, 0.12) !important;
+  color: #60a5fa !important;
+}
 
 /* TIPO */
-
 .tipo-cell {
   display: flex;
   flex-direction: column;
@@ -538,7 +561,6 @@
 }
 
 /* AÇÕES */
-
 .acoes-cell {
   display: flex;
   gap: 6px;
@@ -579,7 +601,6 @@
 }
 
 /* EMPTY STATE */
-
 .empty-state {
   text-align: center;
   padding: 48px 16px !important;
@@ -593,7 +614,6 @@
 }
 
 /* PAGINATION */
-
 .pagination {
   display: flex;
   justify-content: space-between;
@@ -614,7 +634,6 @@
 }
 
 /* MODAL OVERLAY */
-
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -696,7 +715,6 @@
 }
 
 /* CRUD MODAL */
-
 .crud-toggle {
   display: flex;
   margin: 20px 24px 0;
@@ -825,7 +843,6 @@ select.crud-input { cursor: pointer; }
 select.crud-input option { background: #16202e; }
 
 /* Botões do footer do CRUD */
-
 .modal-btn-fechar {
   padding: 10px 24px;
   background: #1a2535;
@@ -866,7 +883,6 @@ select.crud-input option { background: #16202e; }
 }
 
 /* MODAL GERENCIAR CATEGORIAS */
-
 .modal-add-label {
   display: block;
   font-size: 14px;
@@ -1058,6 +1074,7 @@ select.crud-input option { background: #16202e; }
   font-size: 14px;
   color: #8c909f;
 }
+
 /* ─── Dropdown Filtro Categorias ─────────────────────────────────────────── */
 .categoria-filter-wrapper {
   position: relative;
@@ -1164,10 +1181,23 @@ select.crud-input option { background: #16202e; }
   transition: background 0.2s, color 0.2s;
   flex-shrink: 0;
 }
+
 .logout-btn:hover {
   background: rgba(255, 99, 99, 0.15);
   color: #f87171;
 }
+
 .logout-btn .material-symbols-outlined {
   font-size: 20px;
+}
+
+/* Animação para sincronização e carregamentos */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.spin {
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
 }
