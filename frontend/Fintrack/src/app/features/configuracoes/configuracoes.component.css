@@ -507,3 +507,25 @@
 .btn-danger:active {
   transform: scale(0.97);
 }
+.logout-btn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+.logout-btn:hover {
+  background: rgba(255, 99, 99, 0.15);
+  color: #f87171;
+}
+.logout-btn .material-symbols-outlined {
+  font-size: 20px;
+}

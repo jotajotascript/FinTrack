@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { environment } from '../../../environments/environment';
 
@@ -39,8 +39,14 @@ export class Dashboard implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 
   get primeiroNome(): string {
     return this.nomeUsuario.split(' ')[0];

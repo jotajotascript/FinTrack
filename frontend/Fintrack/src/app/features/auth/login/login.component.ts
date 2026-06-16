@@ -18,11 +18,16 @@ export class LoginComponent {
   senha: string = '';
   erro: string = '';
   carregando: boolean = false;
+  mostrarSenha: boolean = false;
 
   constructor(
     private authService: AuthService,
     private router: Router
   ) {}
+
+  toggleSenha(): void {
+    this.mostrarSenha = !this.mostrarSenha;
+  }
 
   async entrar() {
     if (!this.email || !this.senha) {
