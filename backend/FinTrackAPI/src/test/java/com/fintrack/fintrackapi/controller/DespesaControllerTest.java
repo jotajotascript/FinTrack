@@ -2,7 +2,6 @@ package com.fintrack.fintrackapi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fintrack.fintrackapi.dto.DespesaRequestDTO;
-import com.fintrack.fintrackapi.entity.enums.CategoriaEnum;
 import com.fintrack.fintrackapi.entity.enums.RecorrenciaEnum;
 import com.fintrack.fintrackapi.security.JwtService;
 import com.fintrack.fintrackapi.entity.Usuario;
@@ -58,7 +57,7 @@ class DespesaControllerTest {
         DespesaRequestDTO dto = new DespesaRequestDTO();
         dto.setValorDespesa(new BigDecimal("150.00"));
         dto.setDataVencimento(LocalDate.of(2025, 6, 10));
-        dto.setCategoria(CategoriaEnum.OUTROS);
+        dto.setCategoria("OUTROS");
         dto.setTipoSubclasse("Aluguel");
         dto.setRecorrencia(RecorrenciaEnum.MENSAL);
         dto.setDescricao("Aluguel apartamento");

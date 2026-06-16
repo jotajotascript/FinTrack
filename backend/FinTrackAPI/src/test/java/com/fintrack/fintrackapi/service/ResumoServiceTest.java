@@ -4,7 +4,6 @@ import com.fintrack.fintrackapi.dto.ResumoResponseDTO;
 import com.fintrack.fintrackapi.entity.Despesa;
 import com.fintrack.fintrackapi.entity.Receita;
 import com.fintrack.fintrackapi.entity.Usuario;
-import com.fintrack.fintrackapi.entity.enums.CategoriaEnum;
 import com.fintrack.fintrackapi.entity.enums.RecorrenciaEnum;
 import com.fintrack.fintrackapi.repository.DespesaRepository;
 import com.fintrack.fintrackapi.repository.ReceitaRepository;
@@ -54,7 +53,10 @@ class ResumoServiceTest {
                 .usuarioId(usuarioId)
                 .valorReceita(new BigDecimal("3000.00"))
                 .dataRecebimento(LocalDate.of(2025, 6, 5))
-                .categoria(CategoriaEnum.SALARIO)
+                
+                // CORRIGIDO: Alterado de CategoriaEnum para String pura
+                .categoria("Salário")
+                
                 .tipoSubclasse("CLT")
                 .recorrencia(RecorrenciaEnum.MENSAL)
                 .descricao("Salário")
@@ -67,7 +69,10 @@ class ResumoServiceTest {
                 .usuarioId(usuarioId)
                 .valorDespesa(new BigDecimal("1000.00"))
                 .dataVencimento(LocalDate.of(2025, 6, 10))
-                .categoria(CategoriaEnum.OUTROS)
+                
+                // CORRIGIDO: Alterado de CategoriaEnum para String pura
+                .categoria("Outros")
+                
                 .tipoSubclasse("Aluguel")
                 .recorrencia(RecorrenciaEnum.MENSAL)
                 .descricao("Aluguel")

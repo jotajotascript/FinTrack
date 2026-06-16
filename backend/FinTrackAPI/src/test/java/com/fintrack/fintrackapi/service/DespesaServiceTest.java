@@ -4,7 +4,6 @@ import com.fintrack.fintrackapi.dto.DespesaRequestDTO;
 import com.fintrack.fintrackapi.dto.DespesaResponseDTO;
 import com.fintrack.fintrackapi.entity.Despesa;
 import com.fintrack.fintrackapi.entity.Usuario;
-import com.fintrack.fintrackapi.entity.enums.CategoriaEnum;
 import com.fintrack.fintrackapi.entity.enums.RecorrenciaEnum;
 import com.fintrack.fintrackapi.repository.DespesaRepository;
 import com.fintrack.fintrackapi.security.AuthenticatedUserService;
@@ -51,7 +50,10 @@ class DespesaServiceTest {
                 .usuarioId(usuarioId)
                 .valorDespesa(new BigDecimal("150.00"))
                 .dataVencimento(LocalDate.of(2025, 6, 10))
-                .categoria(CategoriaEnum.OUTROS)
+                
+                // CORRIGIDO: Modificado de CategoriaEnum.OUTROS para String pura
+                .categoria("Outros")
+                
                 .tipoSubclasse("Aluguel")
                 .recorrencia(RecorrenciaEnum.MENSAL)
                 .descricao("Aluguel apartamento")
@@ -62,7 +64,10 @@ class DespesaServiceTest {
         DespesaRequestDTO dto = new DespesaRequestDTO();
         dto.setValorDespesa(new BigDecimal("150.00"));
         dto.setDataVencimento(LocalDate.of(2025, 6, 10));
-        dto.setCategoria(CategoriaEnum.OUTROS);
+        
+        // CORRIGIDO: Modificado de CategoriaEnum.OUTROS para String pura
+        dto.setCategoria("Outros");
+        
         dto.setTipoSubclasse("Aluguel");
         dto.setRecorrencia(RecorrenciaEnum.MENSAL);
         dto.setDescricao("Aluguel apartamento");
