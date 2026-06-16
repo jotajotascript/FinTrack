@@ -26,7 +26,7 @@ type ReceitaForm = {
   tipoSubclasse: string;
   valorReceita: number | null;
   dataRecebimento: string;
-  categoria: CategoriaEnum | '';
+  categoria: string;
   categoriaIcone: string;
   tipo: 'FIXA' | 'VARIÁVEL';
   recorrencia: RecorrenciaEnum;
@@ -55,6 +55,7 @@ export class ReceitasComponent implements OnInit {
   // ─── Filtro de Categoria ─────────────────────────────────────────────────────
   dropdownCategoriasAberto = false;
   categoriaSelecionada: string = '';
+  categoriasUsadasNasReceitas: string[] = [];
 
   toggleDropdownCategorias(): void {
     this.dropdownCategoriasAberto = !this.dropdownCategoriasAberto;
@@ -76,13 +77,13 @@ export class ReceitasComponent implements OnInit {
     this.paginaAtual = 1;
   }
 
-  get categoriasUsadasNasReceitas(): string[] {
-    const set = new Set(this.listaReceitas.map(r => r.categoria).filter(Boolean));
-    return Array.from(set);
+  atualizarCategoriasUsadas(): void {
+    const set = new Set(this.listaReceitas.map(r => this.extrairCategoriaReal(r)).filter(Boolean));
+    this.categoriasUsadasNasReceitas = Array.from(set);
   }
 
   contarReceitasPorCategoria(nome: string): number {
-    return this.listaReceitas.filter(r => r.categoria === nome).length;
+    return this.listaReceitas.filter(r => this.extrairCategoriaReal(r) === nome).length;
   }
 
   // ─── Modal Gerenciar Categorias ──────────────────────────────────────────────
@@ -91,22 +92,22 @@ export class ReceitasComponent implements OnInit {
   novaCategoriaNome = '';
 
   categoriasFixas: CategoriaFixa[] = [
-    { nome: 'Salário',     icone: 'work',           cssClass: 'trabalho',    cor: 'primary',   valor: 'SALARIO'     },
+    { nome: 'Salário',     icone: 'work',          cssClass: 'trabalho',    cor: 'primary',   valor: 'SALARIO'     },
     { nome: 'Alimentação', icone: 'restaurant',     cssClass: 'alimentacao', cor: 'secondary', valor: 'ALIMENTACAO' },
     { nome: 'Saúde',       icone: 'favorite',       cssClass: 'saude',       cor: 'tertiary',  valor: 'SAUDE'       },
     { nome: 'Transporte',  icone: 'directions_car', cssClass: 'transporte',  cor: 'secondary', valor: 'TRANSPORTE'  },
     { nome: 'Lazer',       icone: 'beach_access',   cssClass: 'lazer',       cor: 'primary',   valor: 'LAZER'       },
-    { nome: 'Outros',      icone: 'category',       cssClass: 'outros',      cor: 'secondary', valor: 'OUTROS'      },
+    { nome: 'Outros',      icone: 'category',       cssClass: 'outros',      cor: 'secondary', valor: 'OUTROS'       },
   ];
 
   categoriasUsuario: CategoriaUsuario[] = [];
 
-  get todasCategorias(): { nome: string; icone: string; cor: string; valor: CategoriaEnum | string }[] {
+  get todasCategorias(): { nome: string; icone: string; cor: string; valor: string }[] {
     const fixas = this.categoriasFixas.map(c => ({
       nome: c.nome,
       icone: c.icone,
       cor: c.cor,
-      valor: c.valor as CategoriaEnum | string
+      valor: c.valor as string
     }));
     const usuario = this.categoriasUsuario.map(c => ({
       nome: c.nome,
@@ -188,7 +189,9 @@ export class ReceitasComponent implements OnInit {
   cancelarEdicaoCategoria(): void {
     this.categoriaEmEdicao = null;
     this.categoriaEdicaoNome = '';
-  }  // ─── Lista de receitas ───────────────────────────────────────────────────────
+  }
+
+  // ─── Lista de receitas ───────────────────────────────────────────────────────
   listaReceitas: Receita[] = [];
 
   constructor(
@@ -229,6 +232,7 @@ export class ReceitasComponent implements OnInit {
     this.receitaService.listar().subscribe({
       next: (dados) => {
         this.listaReceitas = dados;
+        this.atualizarCategoriasUsadas();
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -245,12 +249,12 @@ export class ReceitasComponent implements OnInit {
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase();
       lista = lista.filter(r =>
-        r.descricao?.toLowerCase().includes(q) ||
+        this.extrairDescricaoReal(r).toLowerCase().includes(q) ||
         r.tipoSubclasse?.toLowerCase().includes(q)
       );
     }
     if (this.categoriaSelecionada) {
-      lista = lista.filter(r => r.categoria === this.categoriaSelecionada);
+      lista = lista.filter(r => this.extrairCategoriaReal(r) === this.categoriaSelecionada);
     }
     return lista;
   }
@@ -298,12 +302,12 @@ export class ReceitasComponent implements OnInit {
   editarReceita(r: Receita): void {
     this.formulario = {
       id: r.id,
-      descricao: r.descricao,
+      descricao: this.extrairDescricaoReal(r),
       tipoSubclasse: r.tipoSubclasse,
       valorReceita: Number(r.valorReceita),
       dataRecebimento: r.dataRecebimento,
-      categoria: r.categoria,
-      categoriaIcone: this.todasCategorias.find(c => c.valor === r.categoria)?.icone ?? 'category',
+      categoria: this.extrairCategoriaReal(r),
+      categoriaIcone: this.todasCategorias.find(c => c.valor === this.extrairCategoriaReal(r))?.icone ?? 'category',
       tipo: r.recorrencia === 'MENSAL' || r.recorrencia === 'SEMANAL' ? 'FIXA' : 'VARIÁVEL',
       recorrencia: r.recorrencia
     };
@@ -316,6 +320,7 @@ export class ReceitasComponent implements OnInit {
     this.receitaService.deletar(id).subscribe({
       next: () => {
         this.listaReceitas = this.listaReceitas.filter(r => r.id !== id);
+        this.atualizarCategoriasUsadas();
         if (this.paginaAtual > this.totalPaginas) {
           this.paginaAtual = this.totalPaginas;
         }
@@ -349,12 +354,22 @@ export class ReceitasComponent implements OnInit {
       return;
     }
 
+    const enumsAceitosPeloJava = ['SALARIO', 'ALIMENTACAO', 'SAUDE', 'TRANSPORTE', 'LAZER', 'OUTROS'];
+    const ehCustomizada = !enumsAceitosPeloJava.includes(this.formulario.categoria);
+    
+    const categoriaFinalDTO = ehCustomizada ? ('OUTROS' as CategoriaEnum) : (this.formulario.categoria as CategoriaEnum);
+    
+    // MÁGICA: Se for customizada, injetamos a tag "::[NomeDaCategoria]" no fim da descrição para recuperar depois
+    const descricaoFinalDTO = ehCustomizada 
+      ? `${this.formulario.descricao.trim()}::[${this.formulario.categoria}]`
+      : this.formulario.descricao.trim();
+
     const dto: ReceitaRequest = {
-      descricao: this.formulario.descricao,
-      valorReceita: this.formulario.valorReceita,
+      descricao: descricaoFinalDTO,
+      valorReceita: Number(this.formulario.valorReceita),
       dataRecebimento: this.formulario.dataRecebimento,
-      categoria: this.formulario.categoria as CategoriaEnum,
-      tipoSubclasse: this.formulario.tipoSubclasse,
+      categoria: categoriaFinalDTO,
+      tipoSubclasse: this.formulario.tipo === 'VARIÁVEL' ? 'VARIÁVEL' : 'FIXA',
       recorrencia: this.formulario.recorrencia
     };
 
@@ -371,6 +386,7 @@ export class ReceitasComponent implements OnInit {
           this.listaReceitas.push(resultado);
           this.paginaAtual = this.totalPaginas;
         }
+        this.atualizarCategoriasUsadas();
         this.cdr.detectChanges();
         this.fecharModal();
       },
@@ -381,7 +397,26 @@ export class ReceitasComponent implements OnInit {
     });
   }
 
-  // ─── Helpers ─────────────────────────────────────────────────────────────────
+  // ─── Métodos Extratores de Tags Metadados ──────────────────────────────────────
+  extrairDescricaoReal(r: Receita): string {
+    if (!r.descricao) return '';
+    if (r.descricao.includes('::[')) {
+      return r.descricao.split('::[')[0];
+    }
+    return r.descricao;
+  }
+
+  extrairCategoriaReal(r: Receita): string {
+    if (r.descricao && r.descricao.includes('::[')) {
+      const partes = r.descricao.split('::[');
+      if (partes[1]) {
+        return partes[1].replace(']', ''); // Retorna o nome limpo, ex: "Freelance"
+      }
+    }
+    return r.categoria;
+  }
+
+  // ─── Helpers Atualizados para Renderização Dinâmica ─────────────────────────────
   formatarValor(valor: number): string {
     return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
