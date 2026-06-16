@@ -35,9 +35,12 @@
         <span class="material-symbols-outlined" style="font-size:32px; color:#9ca3af;">person</span>
       </div>
       <div class="profile-info">
-        <p class="profile-name">Usuário</p>
+        <p class="profile-name">{{ nomeUsuario }}</p>
         <p class="profile-plan"></p>
       </div>
+      <button class="logout-btn" (click)="logout()" title="Sair">
+        <span class="material-symbols-outlined">logout</span>
+      </button>
     </div>
   </aside>
 
@@ -79,7 +82,6 @@
               <div class="stat-icon stat-icon--tertiary">
                 <span class="material-symbols-outlined filled">payments</span>
               </div>
-              <span class="stat-trend">+12% vs mês passado</span>
             </div>
             <p class="stat-label">Total Receitas (Mês)</p>
             <h3 class="stat-value">{{ totalReceitas | currency:'BRL':'symbol':'1.2-2' }}</h3>
@@ -242,11 +244,11 @@
       </div>
 
       <div class="crud-toggle">
-        <button [class.active]="formulario.tipo === 'FIXA'" (click)="formulario.tipo = 'FIXA'">
+        <button [class.active]="formulario.tipo === 'FIXA'" (click)="onTipoChange('FIXA')">
           <span class="material-symbols-outlined">event_repeat</span>
           Receita Fixa
         </button>
-        <button [class.active]="formulario.tipo === 'VARIÁVEL'" (click)="formulario.tipo = 'VARIÁVEL'">
+        <button [class.active]="formulario.tipo === 'VARIÁVEL'" (click)="onTipoChange('VARIÁVEL')">
           <span class="material-symbols-outlined">trending_up</span>
           Receita Variável
         </button>
@@ -255,7 +257,7 @@
       <div class="crud-body">
         <div class="crud-valor-wrapper">
           <label class="crud-label">Valor (R$)</label>
-          <input class="crud-valor-input" type="number" placeholder="0,00" [(ngModel)]="formulario.valorReceita" min="0" step="0.01" />
+          <input class="crud-valor-input" type="number" placeholder="0,00" [(ngModel)]="formulario.valorReceita" min="0" step="0.01" (wheel)="bloquearScroll($event)" />
         </div>
 
         <div class="crud-grid">
@@ -267,17 +269,6 @@
             </div>
           </div>
 
-          <div class="crud-field">
-            <label class="crud-label">Tipo / Subclasse <span class="obrigatorio">*</span></label>
-            <div class="crud-input-wrapper">
-              <span class="material-symbols-outlined crud-input-icon">business</span>
-              <select class="crud-input" [(ngModel)]="formulario.tipoSubclasse">
-                <option value="">Selecione a subclasse</option>
-                <option value="FIXA">Fixa</option>
-                <option value="VARIÁVEL">Variável</option>
-              </select>
-            </div>
-          </div>
 
           <div class="crud-field">
             <label class="crud-label">Data de Recebimento <span class="obrigatorio">*</span></label>
@@ -298,7 +289,7 @@
             </div>
           </div>
 
-          <div class="crud-field">
+          <div class="crud-field" *ngIf="formulario.tipo !== 'VARIÁVEL'">
             <label class="crud-label">Recorrência <span class="obrigatorio">*</span></label>
             <div class="crud-input-wrapper">
               <span class="material-symbols-outlined crud-input-icon">repeat</span>
@@ -381,15 +372,37 @@
                 <div class="cat-icon-wrap custom">
                   <span class="material-symbols-outlined">{{ cat.icone }}</span>
                 </div>
-                <span class="cat-name">{{ cat.nome }}</span>
+                <ng-container *ngIf="categoriaEmEdicao === null || categoriasUsuario.indexOf(cat) !== categoriaEmEdicao; else modoEdicao">
+                  <span class="cat-name">{{ cat.nome }}</span>
+                </ng-container>
+                <ng-template #modoEdicao>
+                  <input
+                    class="cat-edit-input"
+                    type="text"
+                    [(ngModel)]="categoriaEdicaoNome"
+                    (keyup.enter)="confirmarEdicaoCategoria()"
+                    (keyup.escape)="cancelarEdicaoCategoria()"
+                    autofocus
+                  />
+                </ng-template>
               </div>
               <div class="cat-actions">
-                <button class="cat-action-btn edit">
-                  <span class="material-symbols-outlined">edit</span>
-                </button>
-                <button class="cat-action-btn delete" (click)="excluirCategoria(i)">
-                  <span class="material-symbols-outlined">delete</span>
-                </button>
+                <ng-container *ngIf="categoriaEmEdicao === null || categoriasUsuario.indexOf(cat) !== categoriaEmEdicao; else acoesModoEdicao">
+                  <button class="cat-action-btn edit" (click)="iniciarEdicaoCategoria(i)" title="Editar">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="cat-action-btn delete" (click)="excluirCategoria(categoriasUsuario.indexOf(cat))" title="Excluir">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </ng-container>
+                <ng-template #acoesModoEdicao>
+                  <button class="cat-action-btn edit" (click)="confirmarEdicaoCategoria()" title="Confirmar">
+                    <span class="material-symbols-outlined">check</span>
+                  </button>
+                  <button class="cat-action-btn delete" (click)="cancelarEdicaoCategoria()" title="Cancelar">
+                    <span class="material-symbols-outlined">close</span>
+                  </button>
+                </ng-template>
               </div>
             </div>
 

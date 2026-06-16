@@ -35,11 +35,14 @@
     <!-- Profile -->
     <div class="profile-card">
       <div class="profile-avatar">
-        <img alt="User avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa6hW-d7LAz-NmWKffYo8-5Grchg5cPEa5IwYOxBwTHsx343CYrKJqMISWkmniHoxjyK31DU8scKHQY8fNoNjgbuDx9qy588UOI1zb24ie4M7go8Hwgwxizo7XDx9sHnvlR2KRBGrNyihPmPpxeBUQJgkdmaTHDAIm4tYtymdXVGxxzDpZNA1X-fCZmKRhaQj85XiE4SyoOtjepj4jbLAmC28JsUX4bTUG1PyKQKCgfRR1jx-CR81FLS7119PvpS-BYqYbjS196aI" />
+        <span class="material-symbols-outlined" style="font-size:32px; color:#9ca3af;">person</span>
       </div>
       <div class="profile-info">
-        <p class="profile-name">João Silva</p>
+        <p class="profile-name">{{ nomeUsuario }}</p>
       </div>
+      <button class="logout-btn" (click)="logout()" title="Sair">
+        <span class="material-symbols-outlined">logout</span>
+      </button>
     </div>
   </aside>
 
@@ -268,7 +271,7 @@
       <div class="crud-body">
         <div class="crud-valor-wrapper">
           <label class="crud-label">Valor (R$) <span class="obrigatorio">*</span></label>
-          <input class="crud-valor-input" type="number" placeholder="0,00" [(ngModel)]="formulario.valorDespesa" min="0" step="0.01" />
+          <input class="crud-valor-input" type="number" placeholder="0,00" [(ngModel)]="formulario.valorDespesa" min="0" step="0.01" (wheel)="bloquearScroll($event)" />
         </div>
 
         <div class="crud-grid">
@@ -383,15 +386,37 @@
                 <div class="cat-icon-wrap custom">
                   <span class="material-symbols-outlined">{{ cat.icone }}</span>
                 </div>
-                <span class="cat-name">{{ cat.nome }}</span>
+                <ng-container *ngIf="categoriaEmEdicao === null || categoriasUsuario.indexOf(cat) !== categoriaEmEdicao; else modoEdicao">
+                  <span class="cat-name">{{ cat.nome }}</span>
+                </ng-container>
+                <ng-template #modoEdicao>
+                  <input
+                    class="cat-edit-input"
+                    type="text"
+                    [(ngModel)]="categoriaEdicaoNome"
+                    (keyup.enter)="confirmarEdicaoCategoria()"
+                    (keyup.escape)="cancelarEdicaoCategoria()"
+                    autofocus
+                  />
+                </ng-template>
               </div>
               <div class="cat-actions">
-                <button class="cat-action-btn edit">
-                  <span class="material-symbols-outlined">edit</span>
-                </button>
-                <button class="cat-action-btn delete" (click)="excluirCategoria(i)">
-                  <span class="material-symbols-outlined">delete</span>
-                </button>
+                <ng-container *ngIf="categoriaEmEdicao === null || categoriasUsuario.indexOf(cat) !== categoriaEmEdicao; else acoesModoEdicao">
+                  <button class="cat-action-btn edit" (click)="iniciarEdicaoCategoria(i)" title="Editar">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="cat-action-btn delete" (click)="excluirCategoria(categoriasUsuario.indexOf(cat))" title="Excluir">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </ng-container>
+                <ng-template #acoesModoEdicao>
+                  <button class="cat-action-btn edit" (click)="confirmarEdicaoCategoria()" title="Confirmar">
+                    <span class="material-symbols-outlined">check</span>
+                  </button>
+                  <button class="cat-action-btn delete" (click)="cancelarEdicaoCategoria()" title="Cancelar">
+                    <span class="material-symbols-outlined">close</span>
+                  </button>
+                </ng-template>
               </div>
             </div>
 

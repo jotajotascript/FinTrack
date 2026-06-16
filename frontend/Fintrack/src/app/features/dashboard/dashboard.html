@@ -37,13 +37,16 @@
     </div>
 
     <!-- Profile Section -->
-    <div class="flex items-center gap-md p-md bg-surface-container-low rounded-xl border border-outline-variant">
-      <div class="size-10 rounded-full bg-surface-bright overflow-hidden flex items-center justify-center">
-        <span class="material-symbols-outlined text-on-surface-variant">person</span>
+    <div class="profile-card">
+      <div class="profile-avatar">
+        <span class="material-symbols-outlined" style="font-size:32px; color:#9ca3af;">person</span>
       </div>
-      <div class="flex flex-col min-w-0">
-        <p class="text-sm font-semibold text-white truncate">{{ nomeUsuario }}</p>
+      <div class="profile-info">
+        <p class="profile-name">{{ nomeUsuario }}</p>
       </div>
+      <button class="logout-btn" (click)="logout()" title="Sair">
+        <span class="material-symbols-outlined">logout</span>
+      </button>
     </div>
   </aside>
 
@@ -207,12 +210,6 @@
       </section>
 
     </div>
-
-    <!-- Floating Action Button -->
-    <button class="fab fixed bottom-xl right-xl z-20">
-      <span class="material-symbols-outlined">add</span>
-      <span>Nova Transação</span>
-    </button>
 
   </main>
 </div>

@@ -1,9 +1,10 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 
 import { ReceitaService } from './receita.service';
+import { AuthService } from '../../core/services/auth';
 import { Receita, ReceitaRequest, CategoriaEnum, RecorrenciaEnum } from './receita.model';
 
 interface CategoriaFixa {
@@ -40,6 +41,7 @@ type ReceitaForm = {
 })
 export class ReceitasComponent implements OnInit {
 
+  nomeUsuario = '';
   searchQuery = '';
   paginaAtual = 1;
   itensPorPagina = 7;
@@ -52,7 +54,7 @@ export class ReceitasComponent implements OnInit {
 
   // ─── Filtro de Categoria ─────────────────────────────────────────────────────
   dropdownCategoriasAberto = false;
-  categoriaSelecionada: CategoriaEnum | '' = '';
+  categoriaSelecionada: string = '';
 
   toggleDropdownCategorias(): void {
     this.dropdownCategoriasAberto = !this.dropdownCategoriasAberto;
@@ -62,7 +64,7 @@ export class ReceitasComponent implements OnInit {
     this.dropdownCategoriasAberto = false;
   }
 
-  filtrarPorCategoria(nome: CategoriaEnum): void {
+  filtrarPorCategoria(nome: string): void {
     this.categoriaSelecionada = this.categoriaSelecionada === nome ? '' : nome;
     this.dropdownCategoriasAberto = false;
     this.paginaAtual = 1;
@@ -99,13 +101,20 @@ export class ReceitasComponent implements OnInit {
 
   categoriasUsuario: CategoriaUsuario[] = [];
 
-  get todasCategorias(): { nome: string; icone: string; cor: string; valor: CategoriaEnum }[] {
-    return this.categoriasFixas.map(c => ({
+  get todasCategorias(): { nome: string; icone: string; cor: string; valor: CategoriaEnum | string }[] {
+    const fixas = this.categoriasFixas.map(c => ({
       nome: c.nome,
       icone: c.icone,
       cor: c.cor,
-      valor: c.valor
+      valor: c.valor as CategoriaEnum | string
     }));
+    const usuario = this.categoriasUsuario.map(c => ({
+      nome: c.nome,
+      icone: c.icone,
+      cor: 'secondary',
+      valor: c.nome
+    }));
+    return [...fixas, ...usuario];
   }
 
   get categoriasFixasFiltradas(): CategoriaFixa[] {
@@ -127,27 +136,88 @@ export class ReceitasComponent implements OnInit {
     this.novaCategoriaNome = '';
   }
 
+  private readonly STORAGE_KEY = 'fintrack_categorias_receitas';
+
+  private salvarCategoriasStorage(): void {
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.categoriasUsuario));
+  }
+
+  private carregarCategoriasStorage(): void {
+    const saved = localStorage.getItem(this.STORAGE_KEY);
+    if (saved) {
+      try { this.categoriasUsuario = JSON.parse(saved); } catch { }
+    }
+  }
+
+  bloquearScroll(event: WheelEvent): void {
+    (event.target as HTMLInputElement).blur();
+  }
+
   adicionarCategoria(): void {
     const nome = this.novaCategoriaNome.trim();
     if (!nome) return;
     this.categoriasUsuario.push({ nome, icone: 'category' });
+    this.salvarCategoriasStorage();
     this.novaCategoriaNome = '';
   }
 
   excluirCategoria(index: number): void {
     this.categoriasUsuario.splice(index, 1);
+    this.salvarCategoriasStorage();
   }
 
-  // ─── Lista de receitas ───────────────────────────────────────────────────────
+  categoriaEmEdicao: number | null = null;
+  categoriaEdicaoNome = '';
+
+  iniciarEdicaoCategoria(index: number): void {
+    const cat = this.categoriasUsuarioFiltradas[index];
+    const indexReal = this.categoriasUsuario.findIndex(c => c === cat);
+    this.categoriaEmEdicao = indexReal;
+    this.categoriaEdicaoNome = cat.nome;
+  }
+
+  confirmarEdicaoCategoria(): void {
+    const nome = this.categoriaEdicaoNome.trim();
+    if (nome && this.categoriaEmEdicao !== null) {
+      this.categoriasUsuario[this.categoriaEmEdicao].nome = nome;
+      this.salvarCategoriasStorage();
+    }
+    this.cancelarEdicaoCategoria();
+  }
+
+  cancelarEdicaoCategoria(): void {
+    this.categoriaEmEdicao = null;
+    this.categoriaEdicaoNome = '';
+  }  // ─── Lista de receitas ───────────────────────────────────────────────────────
   listaReceitas: Receita[] = [];
 
   constructor(
     private receitaService: ReceitaService,
+    private authService: AuthService,
     private route: ActivatedRoute,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  onTipoChange(tipo: 'FIXA' | 'VARIÁVEL'): void {
+    this.formulario.tipo = tipo;
+    if (tipo === 'VARIÁVEL') {
+      this.formulario.tipoSubclasse = 'VARIÁVEL';
+      this.formulario.recorrencia = 'ANUAL';
+    } else {
+      this.formulario.tipoSubclasse = 'FIXA';
+      this.formulario.recorrencia = 'MENSAL';
+    }
+  }
+
   ngOnInit(): void {
+    this.nomeUsuario = this.authService.getNomeUsuario() ?? 'Usuário';
+    this.carregarCategoriasStorage();
     this.carregarReceitas();
     if (this.route.snapshot.queryParamMap.get('novo') === 'true') {
       setTimeout(() => this.abrirModalNovaReceita(), 0);
@@ -209,7 +279,7 @@ export class ReceitasComponent implements OnInit {
     return {
       id: '',
       descricao: '',
-      tipoSubclasse: '',
+      tipoSubclasse: 'FIXA',
       valorReceita: null,
       dataRecebimento: '',
       categoria: '',
@@ -320,7 +390,7 @@ export class ReceitasComponent implements OnInit {
     return this.todasCategorias.find(c => c.valor === cat)?.icone ?? 'category';
   }
 
-  nomeCategoriaExibicao(cat: CategoriaEnum | ''): string {
+  nomeCategoriaExibicao(cat: string): string {
     if (!cat) return 'Categorias';
     const mapa: Record<string, string> = {
       SALARIO: 'Salário',

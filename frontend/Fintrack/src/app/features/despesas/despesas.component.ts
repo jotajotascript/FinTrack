@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {
   DespesaService,
@@ -10,6 +10,7 @@ import {
   RecorrenciaEnum,
   TipoSubclasse,
 } from './despesa.service';
+import { AuthService } from '../../core/services/auth';
  
 // Mapeamento visual das categorias do backend para exibição amigável
 interface CategoriaInfo {
@@ -37,7 +38,7 @@ type DespesaForm = {
   descricao: string;
   valorDespesa: number | null;
   dataVencimento: string;
-  categoria: CategoriaEnum | '';
+  categoria: string; // CategoriaEnum fixo ou 'USER:<nome>' para categorias do usuário
   tipoSubclasse: TipoSubclasse | '';
   recorrencia: RecorrenciaEnum;
 };
@@ -52,12 +53,20 @@ type DespesaForm = {
 export class DespesasComponent implements OnInit {
  
   listaDespesas: Despesa[] = [];
+  nomeUsuario = '';
   carregando = false;
   erro: string | null = null;
  
-  constructor(private despesaService: DespesaService, private route: ActivatedRoute, private cdr: ChangeDetectorRef) {}
+  constructor(private despesaService: DespesaService, private authService: AuthService, private route: ActivatedRoute, private router: Router, private cdr: ChangeDetectorRef) {}
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
  
   ngOnInit(): void {
+    this.nomeUsuario = this.authService.getNomeUsuario() ?? 'Usuário';
+    this.carregarCategoriasStorage();
     this.carregarDespesasDoServidor();
     if (this.route.snapshot.queryParamMap.get('novo') === 'true') {
       this.abrirModalNovaDespesa();
@@ -100,15 +109,59 @@ export class DespesasComponent implements OnInit {
     this.novaCategoriaNome = '';
   }
 
+  private readonly STORAGE_KEY = 'fintrack_categorias_despesas';
+
+  private salvarCategoriasStorage(): void {
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.categoriasUsuario));
+  }
+
+  private carregarCategoriasStorage(): void {
+    const saved = localStorage.getItem(this.STORAGE_KEY);
+    if (saved) {
+      try { this.categoriasUsuario = JSON.parse(saved); } catch { }
+    }
+  }
+
+  bloquearScroll(event: WheelEvent): void {
+    (event.target as HTMLInputElement).blur();
+  }
+
   adicionarCategoria(): void {
     const nome = this.novaCategoriaNome.trim();
     if (!nome) return;
     this.categoriasUsuario.push({ nome, icone: 'category' });
+    this.salvarCategoriasStorage();
     this.novaCategoriaNome = '';
   }
 
   excluirCategoria(index: number): void {
     this.categoriasUsuario.splice(index, 1);
+    this.salvarCategoriasStorage();
+  }
+
+  categoriaEmEdicao: number | null = null;
+  categoriaEdicaoNome = '';
+
+  iniciarEdicaoCategoria(index: number): void {
+    // O índice recebido é relativo à lista filtrada; precisamos encontrar o índice real
+    const cat = this.categoriasUsuarioFiltradas[index];
+    const indexReal = this.categoriasUsuario.findIndex(c => c === cat);
+    this.categoriaEmEdicao = indexReal;
+    this.categoriaEdicaoNome = cat.nome;
+  }
+
+  confirmarEdicaoCategoria(): void {
+    const nome = this.categoriaEdicaoNome.trim();
+    if (nome && this.categoriaEmEdicao !== null) {
+      this.categoriasUsuario[this.categoriaEmEdicao].nome = nome;
+      this.salvarCategoriasStorage();
+    }
+    this.cancelarEdicaoCategoria();
+  }
+
+  cancelarEdicaoCategoria(): void {
+    this.categoriaEmEdicao = null;
+    this.categoriaEdicaoNome = '';
   }
 
   // ─── Integração com o Backend ────────────────────────────────────────────────
@@ -141,7 +194,7 @@ export class DespesasComponent implements OnInit {
  
   // ─── Mapeamento visual das categorias do backend ──────────────────────────────
  
-  readonly categorias: CategoriaInfo[] = [
+  readonly categoriasFixasList: CategoriaInfo[] = [
     { valor: 'ALIMENTACAO', label: 'Alimentação', icone: 'restaurant',    cor: 'tertiary'  },
     { valor: 'LAZER',       label: 'Lazer',       icone: 'theaters',       cor: 'secondary' },
     { valor: 'SAUDE',       label: 'Saúde',       icone: 'favorite',       cor: 'primary'   },
@@ -149,11 +202,21 @@ export class DespesasComponent implements OnInit {
     { valor: 'SALARIO',     label: 'Salário',     icone: 'payments',       cor: 'secondary' },
     { valor: 'OUTROS',      label: 'Outros',      icone: 'category',       cor: 'secondary' },
   ];
+
+  get categorias(): CategoriaInfo[] {
+    const usuario: CategoriaInfo[] = this.categoriasUsuario.map(c => ({
+      valor: c.nome as CategoriaEnum,
+      label: c.nome,
+      icone: 'category',
+      cor: 'secondary'
+    }));
+    return [...this.categoriasFixasList, ...usuario];
+  }
  
   readonly recorrencias: RecorrenciaEnum[] = ['MENSAL', 'SEMANAL', 'ANUAL'];
  
   getCategoriaInfo(valor: CategoriaEnum): CategoriaInfo {
-    return this.categorias.find(c => c.valor === valor) ?? {
+    return this.categoriasFixasList.find(c => c.valor === valor) ?? {
       valor,
       label: valor,
       icone: 'category',
@@ -284,7 +347,7 @@ export class DespesasComponent implements OnInit {
       valorDespesa: null,
       dataVencimento: '',
       categoria: '',
-      tipoSubclasse: '',
+      tipoSubclasse: 'FIXA',
       recorrencia: 'MENSAL',
     };
   }

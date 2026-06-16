@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth';
 
@@ -16,6 +17,7 @@ import { AuthService } from '../../core/services/auth';
 export class ConfiguracoesComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private authService = inject(AuthService);
+  private router = inject(Router);
 
   nomeCompleto = '';
   email = '';
@@ -57,7 +59,9 @@ export class ConfiguracoesComponent implements OnInit {
       if (isPlatformBrowser(this.platformId)) {
         localStorage.setItem('nomeUsuario', this.nomeCompleto);
       }
-      alert('Alterações salvas!');
+      alert('Alterações salvas! Faça login novamente.');
+      this.authService.logout();
+      this.router.navigate(['/auth/login']);
     } catch (err: any) {
       alert(err.message);
     }
@@ -75,12 +79,17 @@ export class ConfiguracoesComponent implements OnInit {
         body: JSON.stringify({ senhaAtual: this.senhaAtual, senha: this.novaSenha })
       });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).mensagem ?? `Erro ${res.status}`);
-      this.senhaAtual = '';
-      this.novaSenha = '';
-      alert('Senha alterada com sucesso!');
+      alert('Senha alterada com sucesso! Faça login novamente.');
+      this.authService.logout();
+      this.router.navigate(['/auth/login']);
     } catch (err: any) {
       alert(err.message);
     }
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/auth/login']);
   }
 
   async excluirConta(): Promise<void> {
