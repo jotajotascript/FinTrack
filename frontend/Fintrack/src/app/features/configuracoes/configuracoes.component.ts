@@ -48,7 +48,7 @@ export class ConfiguracoesComponent implements OnInit {
   async salvarInformacoes(): Promise<void> {
     try {
       const res = await fetch(`${environment.apiUrl}/usuario/perfil`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: this.headers,
         body: JSON.stringify({ nome: this.nomeCompleto, email: this.email })
       });
@@ -64,7 +64,7 @@ export class ConfiguracoesComponent implements OnInit {
     if (!this.senhaAtual || !this.novaSenha) { alert('Preencha os dois campos de senha.'); return; }
     try {
       const res = await fetch(`${environment.apiUrl}/usuario/senha`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: this.headers,
         body: JSON.stringify({ senhaAtual: this.senhaAtual, novaSenha: this.novaSenha })
       });
